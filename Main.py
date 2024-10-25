@@ -7,8 +7,10 @@ class Player:
         self.action = 0
         self.dir = 0
         self.image = load_image('Sci-fi hero 64x65.png')
+        self.vertical = 0
         self.mx, self.my = 0,0
     def update(self):
+
         if self.dir == -1:
             if self.x >= 300:
                 self.x -=7
@@ -23,18 +25,30 @@ class Player:
         else:
             self.action =18
             self.frame = (self.frame +1) % 12
+        if self.vertical !=0:
+            self.y += self.vertical
+            self.vertical -= gravity
+            self.action = 9
+            self.frame = (self.frame +1) %6
+        if self.y <=90:
+            y = 90
+            self.vertical = 0
     def handle_event(self, event):
         if event.type == SDL_KEYDOWN:
             if event.key == SDLK_a:
                 self.dir -=1
-            elif event.key == SDLK_d:
+            if event.key == SDLK_d:
                 self.dir +=1
+            if event.key == SDLK_SPACE and self.vertical == 0:
+                self.frame = 0
+                self.vertical = 16
         elif event.type == SDL_KEYUP:
             self.frame = 0
             if event.key == SDLK_a:
                 self.dir +=1
-            elif event.key == SDLK_d:
+            if event.key == SDLK_d:
                 self.dir -=1
+
         elif event.type == SDL_MOUSEMOTION:
             self.mx, self.my = event.x , DK_height - 1 - event.y
     def draw(self):
@@ -60,12 +74,12 @@ class BackGround:
     def update(self):
         if player.dir == 1:
             if player.x >= 700:
-                self.x[1] -= self.speed
+                self.x[2] -= self.speed
                 self.x[3] -= self.speed*2
                 self.x[4] -= self.speed*3
         elif player.dir == -1:
             if player.x <= 300:
-                self.x[1] += self.speed
+                self.x[2] += self.speed
                 self.x[3] += self.speed*2
                 self.x[4] += self.speed*3
         else:
@@ -73,9 +87,9 @@ class BackGround:
     def draw(self):
         self.layer1.draw(self.x[0], self.y[0], 1600, 800)
         self.layer2.draw(self.x[1], self.y[1],1600, 800)
-        self.layer3.draw(self.x[2], self.y[2],1600, 800)
-        self.layer4.draw(self.x[3], self.y[3],1600, 800)
-        self.layer5.draw(self.x[4], self.y[4],1600, 800)
+        self.layer3.draw(self.x[2], self.y[2],2400, 800)
+        self.layer4.draw(self.x[3], self.y[3],2400, 800)
+        self.layer5.draw(self.x[4], self.y[4],2400, 800)
 
 def handle_events():
     global running
@@ -94,7 +108,9 @@ def reset_world():
     global running
     global player
     global world
+    global gravity
 
+    gravity = 3
     running = True
     world = []
 
