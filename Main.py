@@ -25,14 +25,35 @@ class Player:
         else:
             self.action =18
             self.frame = (self.frame +1) % 12
+
+
+        # 중력 적용
         if self.vertical !=0:
             self.y += self.vertical
             self.vertical -= gravity
             self.action = 9
             self.frame = (self.frame +1) %6
+
+
         if self.y <=90:
             y = 90
             self.vertical = 0
+
+
+        # 땅과의 충돌 체크
+        on_ground = False
+        for block in blocks:
+            if block.collide(self):
+                self.y = block.y + block.height  # 블록 위에 위치
+                self.vertical = 0
+                on_ground = True
+                break
+        if not on_ground and self.y <= 90:
+            self.y = 90
+            self.vertical = 0
+
+
+
     def handle_event(self, event):
         if event.type == SDL_KEYDOWN:
             if event.key == SDLK_a:
@@ -91,6 +112,36 @@ class BackGround:
         self.layer4.draw(self.x[3], self.y[3],2400, 800)
         self.layer5.draw(self.x[4], self.y[4],2400, 800)
 
+
+
+
+
+class Block:
+    def __init__(self, x, y, width, height):
+        self.x, self.y = x, y
+        self.width, self.height = width, height
+        self.frame=0
+        self.action=0
+        self.image = load_image('DARK Edition Tileset No background.png')
+
+    def collide(self, player):
+        # 단순 사각형 충돌 판정
+        if self.x - self.width // 2 < player.x < self.x + self.width // 2:
+            if self.y < player.y < self.y + self.height:
+                return True
+        return False
+    def update(self):
+        pass
+    def draw(self):
+        self.image.clip_draw(self.frame*100, self.action*100, self.width, self.height, self.x, self.y)
+
+
+
+
+
+
+
+
 def handle_events():
     global running
 
@@ -104,11 +155,14 @@ def handle_events():
             player.handle_event(event)
 
 
+
+
 def reset_world():
     global running
     global player
     global world
     global gravity
+    global blocks
 
     gravity = 3
     running = True
@@ -120,6 +174,9 @@ def reset_world():
     player = Player()
     world.append(player)
 
+    blocks = [Block(400, 150, 200, 30), Block(600, 300, 200, 30)]
+
+
 
 
 def update_world():
@@ -130,6 +187,8 @@ def render_world():
     clear_canvas()
     for i in world:
         i.draw()
+    for b in blocks:
+        b.update()
     update_canvas()
 
 DK_width, DK_height = 1024, 768
