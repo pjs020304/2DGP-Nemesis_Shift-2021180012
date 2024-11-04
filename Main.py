@@ -3,11 +3,17 @@ from pico2d import *
 class Player:
     def __init__(self):
         self.x, self.y = 400,90
+        self.size_x, self.size_y = 120, 120
         self.frame = 0
         self.action = 0
         self.dir = 0
         self.image = load_image('Sci-fi hero 64x65.png')
+
+        # 떨어짐 체크
         self.vertical = 0
+        self.fall = False
+        self.min_x, self.max_x = 0, 1000
+
         self.mx, self.my = 0,0
     def update(self):
 
@@ -28,29 +34,30 @@ class Player:
 
 
         # 중력 적용
-        if self.vertical !=0:
+        if self.fall:
             self.y += self.vertical
             self.vertical -= gravity
             self.action = 9
-            self.frame = (self.frame +1) %6
-
-
-        if self.y <=90:
-            y = 90
-            self.vertical = 0
-
+            self.frame = (self.frame + 1) % 6
 
         # 땅과의 충돌 체크
         on_ground = False
         for block in blocks:
-            if block.collide(self):
-                self.y = block.y + block.height  # 블록 위에 위치
+            if block.collide(block):
+                self.y = block.y + (block.size_y//2) +25  # 블록 위에 위치
                 self.vertical = 0
+                self.fall = False
+                self.min_x, self.max_x = block.x - (block.size_x//2), block.x + (block.size_x//2)
                 on_ground = True
                 break
         if not on_ground and self.y <= 90:
             self.y = 90
             self.vertical = 0
+            self.fall = False
+
+        if self.x <self.min_x or self.x > self.max_x:
+            self.fall = True
+            self.min_x, self.max_x = 0, 1000
 
 
 
@@ -60,9 +67,10 @@ class Player:
                 self.dir -=1
             if event.key == SDLK_d:
                 self.dir +=1
-            if event.key == SDLK_SPACE and self.vertical == 0:
+            if event.key == SDLK_SPACE and self.fall == False:
                 self.frame = 0
-                self.vertical = 16
+                self.fall = True
+                self.vertical = 36
         elif event.type == SDL_KEYUP:
             self.frame = 0
             if event.key == SDLK_a:
@@ -75,11 +83,11 @@ class Player:
     def draw(self):
         if dir != 0:
             if self.x < self.mx:
-                self.image.clip_draw(self.frame * 64, self.action * 65, 64, 65, self.x, self.y, 150, 150)
+                self.image.clip_draw(self.frame * 64, self.action * 65, 60, 65, self.x, self.y, self.size_x, self.size_y)
             elif self.x >= self.mx:
-                self.image.clip_composite_draw(self.frame * 64, self.action * 65, 64, 65,0,'h', self.x, self.y, 150, 150)
+                self.image.clip_composite_draw(self.frame * 64, self.action * 65, 60, 65,0,'h', self.x, self.y, self.size_x, self.size_y)
         else:
-            self.image.clip_draw(self.frame * 64, self.action * 65, 64, 65, self.x, self.y, 150, 150)
+            self.image.clip_draw(self.frame * 64, self.action * 65, 60, 65, self.x, self.y, self.size_x, self.size_y)
 
 
 class BackGround:
@@ -111,29 +119,38 @@ class BackGround:
         self.layer3.draw(self.x[2], self.y[2],2400, 800)
         self.layer4.draw(self.x[3], self.y[3],2400, 800)
         self.layer5.draw(self.x[4], self.y[4],2400, 800)
+        pass
 
 
 
 
 
 class Block:
-    def __init__(self, x, y, width, height):
-        self.x, self.y = x, y
+    def __init__(self, frame_x, action_y, width, height, position_x, position_y, size_x, size_y):
+        self.frame, self.action =frame_x, action_y
         self.width, self.height = width, height
-        self.frame=0
-        self.action=0
-        self.image = load_image('DARK Edition Tileset No background.png')
+        self.x, self.y = position_x, position_y
+        self.size_x, self.size_y = size_x, size_y
 
-    def collide(self, player):
-        # 단순 사각형 충돌 판정
-        if self.x - self.width // 2 < player.x < self.x + self.width // 2:
-            if self.y < player.y < self.y + self.height:
+        # self.image = load_image('DARK Edition Tileset No background.png')
+        self.image = load_image('layer 1.png')
+
+    def collide(self, block):
+        if block.x-(block.size_x //2) < player.x < block.x + (block.size_x //2):
+            if block.y< player.y< block.y+(block.size_y //2):
                 return True
         return False
     def update(self):
+        if player.dir == 1:
+            if player.x >= 700:
+                self.x -=7
+        elif player.dir == -1:
+            if player.x <= 300:
+                self.x += 7
+
         pass
     def draw(self):
-        self.image.clip_draw(self.frame*100, self.action*100, self.width, self.height, self.x, self.y)
+        self.image.clip_draw(self.frame, self.action, self.width, self.height, self.x, self.y, self.size_x, self.size_y)
 
 
 
@@ -174,8 +191,10 @@ def reset_world():
     player = Player()
     world.append(player)
 
-    blocks = [Block(400, 150, 200, 30), Block(600, 300, 200, 30)]
-
+    blocks = [Block(0, 62, 45, 18, DK_width//2, DK_height//2, 300, 100), Block(0, 62, 45, 18, DK_width//2, DK_height//4, 150, 100)]
+    for block in blocks:
+        world.append(block)
+        pass
 
 
 
@@ -187,11 +206,9 @@ def render_world():
     clear_canvas()
     for i in world:
         i.draw()
-    for b in blocks:
-        b.update()
     update_canvas()
 
-DK_width, DK_height = 1024, 768
+DK_width, DK_height = 1000, 700
 
 open_canvas(DK_width, DK_height)
 reset_world()
