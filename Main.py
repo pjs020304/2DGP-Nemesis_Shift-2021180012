@@ -1,4 +1,5 @@
 from pico2d import *
+import game_world
 
 class Player:
     def __init__(self):
@@ -177,35 +178,31 @@ def handle_events():
 def reset_world():
     global running
     global player
-    global world
     global gravity
     global blocks
 
     gravity = 3
     running = True
-    world = []
 
     background = BackGround()
-    world.append(background)
+    game_world.add_obj(background,0)
 
     player = Player()
-    world.append(player)
+    game_world.add_obj(player,1)
 
     blocks = [Block(0, 62, 45, 18, DK_width//2, DK_height//2, 300, 100), Block(0, 62, 45, 18, DK_width//2, DK_height//4, 150, 100)]
     for block in blocks:
-        world.append(block)
+        game_world.add(block, 0)
         pass
 
 
 
 def update_world():
-    for i in world:
-        i.update()
+    game_world.update()
 
 def render_world():
     clear_canvas()
-    for i in world:
-        i.draw()
+    game_world.render()
     update_canvas()
 
 DK_width, DK_height = 1000, 700
