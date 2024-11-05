@@ -192,7 +192,7 @@ def reset_world():
 
     blocks = [Block(0, 62, 45, 18, DK_width//2, DK_height//2, 300, 100), Block(0, 62, 45, 18, DK_width//2, DK_height//4, 150, 100)]
     for block in blocks:
-        game_world.add(block, 0)
+        game_world.add_obj(block, 0)
         pass
 
 
