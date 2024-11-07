@@ -1,16 +1,7 @@
-from pico2d import open_canvas, delay, close_canvas
-
+import pico2d
 import  play_mode
-
-open_canvas(play_mode.DK_width, play_mode.DK_height)
-play_mode.init()
-
-while play_mode.running:
-    play_mode.handle_events()
-    play_mode.update()
-    play_mode.render()
-    delay(0.03)
-
-play_mode.finish()
-
-close_canvas()
+import game_framework
+import start_mode as start_mode
+pico2d.open_canvas(play_mode.DK_width, play_mode.DK_height)
+game_framework.run(start_mode)
+pico2d.close_canvas()

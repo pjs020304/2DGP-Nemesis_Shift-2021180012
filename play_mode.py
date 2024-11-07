@@ -137,10 +137,11 @@ class Block:
         self.image = load_image('layer 1.png')
 
     def collide(self, block):
-        if block.x-(block.size_x //2) < player.x < block.x + (block.size_x //2):
-            if block.y< player.y< block.y+(block.size_y //2):
-                return True
-        return False
+        if player.vertical <=0:
+            if block.x-(block.size_x //2) < player.x < block.x + (block.size_x //2):
+                if block.y< player.y< block.y+(block.size_y //2):
+                    return True
+            return False
     def update(self):
         if player.dir == 1:
             if player.x >= 700:
@@ -201,7 +202,7 @@ def init():
 def update():
     game_world.update()
 
-def render():
+def draw():
     clear_canvas()
     game_world.render()
     update_canvas()
