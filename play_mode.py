@@ -1,6 +1,7 @@
 from pico2d import *
 import game_world
 import game_framework
+import pause_mode
 
 class Player:
     def __init__(self):
@@ -170,7 +171,7 @@ def handle_events():
         if event.type == SDL_QUIT:
             game_framework.quit()
         elif event.type == SDL_KEYDOWN and event.key == SDLK_ESCAPE:
-            game_framework.quit()
+            game_framework.push_mode(pause_mode)
         else:
             player.handle_event(event)
 
@@ -212,3 +213,7 @@ def finish():
     pass
 DK_width, DK_height = 1000, 700
 
+def pause():
+    pass
+def resume():
+    pass
