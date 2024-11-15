@@ -20,6 +20,7 @@ class Player:
         self.action = 0
         self.dir = 0
         self.image = load_image('Sci-fi hero 64x65.png')
+        self.state = 'Idle'
         # 떨어짐 체크
         self.vertical = 0
         self.fall = False
@@ -50,9 +51,13 @@ class Player:
             self.action = 9
             self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 6
 
+        if self.state == 'Basic_Attack':
+            self.action = 8
+            self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time//3)
+            if self.frame >=4:
+                self.state = 'Idle'
+
         # 땅과의 충돌 체크
-
-
         if self.y <= 90:
             self.y = 90
             self.vertical = 0
@@ -74,13 +79,20 @@ class Player:
                 self.frame = 0
                 self.fall = True
                 self.vertical = 16
+            if event.key == SDLK_t:
+                play_mode.collider_trig = not play_mode.collider_trig
         elif event.type == SDL_KEYUP:
             self.frame = 0
             if event.key == SDLK_a:
                 self.dir +=1
             if event.key == SDLK_d:
                 self.dir -=1
-
+        elif event.type == SDL_MOUSEBUTTONDOWN:
+            if event.button == SDL_BUTTON_LEFT and self.state == 'Idle':
+                self.frame = 0
+                self.action = 8
+                self.state = 'Basic_Attack'
+                print('왼쪽 버튼 클릭')
         elif event.type == SDL_MOUSEMOTION:
             self.mx, self.my = event.x , play_mode.DK_height - 1 - event.y
     def draw(self):
@@ -91,8 +103,8 @@ class Player:
                 self.image.clip_composite_draw(int(self.frame) * 64, self.action * 65, 60, 65,0,'h', self.x, self.y, self.size_x, self.size_y)
         else:
             self.image.clip_draw(int(self.frame)* 64, self.action * 65, 60, 65, self.x, self.y, self.size_x, self.size_y)
-        draw_rectangle(*self.get_bb())
-
+        if play_mode.collider_trig:
+            draw_rectangle(*self.get_bb())
     def get_bb(self):
         return self.x-self.size_x//4, self.y-self.size_y//4, self.x+self.size_x//4, self.y+self.size_y//4
 

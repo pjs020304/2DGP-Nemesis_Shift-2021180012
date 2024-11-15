@@ -24,7 +24,8 @@ class Block:
         pass
     def draw(self):
         self.image.clip_draw(self.frame, self.action, self.width, self.height, self.x, self.y, self.size_x, self.size_y)
-        draw_rectangle(*self.get_bb())
+        if play_mode.collider_trig:
+            draw_rectangle(*self.get_bb())
     def get_bb(self):
         return self.x - self.size_x // 2, self.y+ self.size_y // 4, self.x + self.size_x // 2, self.y + self.size_y // 2
     def handle_collision(self, group, other):

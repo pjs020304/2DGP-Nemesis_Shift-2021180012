@@ -25,7 +25,9 @@ def init():
     global gravity
     global blocks
     global DK_width, DK_height
+    global collider_trig
 
+    collider_trig = False
     gravity = 1
     running = True
 
