@@ -20,7 +20,6 @@ class Player:
         self.action = 0
         self.dir = 0
         self.image = load_image('Sci-fi hero 64x65.png')
-
         # 떨어짐 체크
         self.vertical = 0
         self.fall = False
@@ -44,27 +43,17 @@ class Player:
             self.action =18
             self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 12
 
-
-
-
         # 중력 적용
         if self.fall:
             self.y += self.vertical
-            self.vertical -= play_mode.gravity
+            self.vertical -= (play_mode.gravity* RUN_SPEED_PPS * game_framework.frame_time)//2
             self.action = 9
             self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 6
 
         # 땅과의 충돌 체크
-        on_ground = False
-        for block in play_mode.blocks:
-            if block.collide(block):
-                self.y = block.y + (block.size_y//2) +25  # 블록 위에 위치
-                self.vertical = 0
-                self.fall = False
-                self.min_x, self.max_x = block.x - (block.size_x//2), block.x + (block.size_x//2)
-                on_ground = True
-                break
-        if not on_ground and self.y <= 90:
+
+
+        if self.y <= 90:
             self.y = 90
             self.vertical = 0
             self.fall = False
@@ -84,7 +73,7 @@ class Player:
             if event.key == SDLK_SPACE and self.fall == False:
                 self.frame = 0
                 self.fall = True
-                self.vertical = 36
+                self.vertical = 16
         elif event.type == SDL_KEYUP:
             self.frame = 0
             if event.key == SDLK_a:
@@ -102,3 +91,15 @@ class Player:
                 self.image.clip_composite_draw(int(self.frame) * 64, self.action * 65, 60, 65,0,'h', self.x, self.y, self.size_x, self.size_y)
         else:
             self.image.clip_draw(int(self.frame)* 64, self.action * 65, 60, 65, self.x, self.y, self.size_x, self.size_y)
+        draw_rectangle(*self.get_bb())
+
+    def get_bb(self):
+        return self.x-self.size_x//4, self.y-self.size_y//4, self.x+self.size_x//4, self.y+self.size_y//4
+
+    def handle_collision(self, group, other):
+        if group == 'player:block' and self.vertical < 0:
+            self.y = other.y + (other.size_y // 2) + 25  # 블록 위에 위치
+            self.vertical = 0
+            self.fall = False
+            self.min_x, self.max_x = other.x - (other.size_x // 2), other.x + (other.size_x // 2)
+            pass

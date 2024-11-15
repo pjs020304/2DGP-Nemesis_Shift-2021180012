@@ -13,12 +13,6 @@ class Block:
         # self.image = load_image('DARK Edition Tileset No background.png')
         self.image = load_image('layer 1.png')
 
-    def collide(self, block):
-        if play_mode.player.vertical <=0:
-            if block.x-(block.size_x //2) < play_mode.player.x < block.x + (block.size_x //2):
-                if block.y< play_mode.player.y< block.y+(block.size_y //2):
-                    return True
-            return False
     def update(self):
         if play_mode.player.dir == 1:
             if play_mode.player.x >= 700:
@@ -30,4 +24,9 @@ class Block:
         pass
     def draw(self):
         self.image.clip_draw(self.frame, self.action, self.width, self.height, self.x, self.y, self.size_x, self.size_y)
-
+        draw_rectangle(*self.get_bb())
+    def get_bb(self):
+        return self.x - self.size_x // 2, self.y+ self.size_y // 4, self.x + self.size_x // 2, self.y + self.size_y // 2
+    def handle_collision(self, group, other):
+        if group == 'player:block':
+            pass

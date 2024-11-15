@@ -26,7 +26,7 @@ def init():
     global blocks
     global DK_width, DK_height
 
-    gravity = 3
+    gravity = 1
     running = True
 
     backgrounds = background.BackGround()
@@ -34,20 +34,22 @@ def init():
 
     player = player.Player()
     game_world.add_obj(player,1)
+    game_world.add_collision_pair('player:block', player, None)
 
     blocks = [
-        blocks.Block(0, 62, 45, 18, DK_width//2, DK_height//2, 300, 100),
+        blocks.Block(0, 62, 45, 18, DK_width, DK_height//2, 300, 100),
         blocks.Block(0, 62, 45, 18, DK_width//2, DK_height//4, 150, 100)
     ]
     for block in blocks:
         game_world.add_obj(block, 0)
         pass
-
+    for block in blocks:
+        game_world.add_collision_pair('player:block', None, block)
 
 
 def update():
     game_world.update()
-
+    game_world.handle_collisions()
 def draw():
     clear_canvas()
     game_world.render()
