@@ -73,8 +73,9 @@ class Player:
             else:
                 self.min_x += RUN_SPEED_PPS * game_framework.frame_time
                 self.max_x += RUN_SPEED_PPS * game_framework.frame_time
+            if self.state == 'Idle':
+                self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 8
             self.action = self.run_action
-            self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 8
 
         elif self.dir == 1:
             if self.x <= 700:
@@ -82,30 +83,37 @@ class Player:
             else:
                 self.min_x -= RUN_SPEED_PPS * game_framework.frame_time
                 self.max_x -= RUN_SPEED_PPS * game_framework.frame_time
-            self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 8
+            if self.state == 'Idle':
+                self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 8
             self.action = self.run_action
         else:
             self.action =self.idle_action
-            self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 12
+            if self.state == 'Idle':
+                self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 12
 
         # 중력 적용
         if self.fall:
             self.y += self.vertical
             self.vertical -= (play_mode.gravity* RUN_SPEED_PPS * game_framework.frame_time)//2
             self.action = self.fall_action
-            self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 6
+            if self.state == 'Idle':
+                self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 6
 
         if self.state == 'Basic_Attack':
             self.action = self.basic_atk_action
-            self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time//2)
+            self.frame = self.frame + FRAMES_PER_ACTION/2 * ACTION_PER_TIME * game_framework.frame_time
             if self.frame >=4:
+                self.frame = 0
+                self.action = self.idle_action
                 self.state = 'Idle'
 
         if self.state == 'Skill_Attack':
             self.action = self.skill_atk_action
-            self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time//2)
+            self.frame = self.frame + FRAMES_PER_ACTION/2 * ACTION_PER_TIME * game_framework.frame_time
             if self.frame >=8:
                 self.state = 'Idle'
+                self.frame = 0
+                self.action = self.idle_action
                 self.skill_count = get_time()
 
         # 땅과의 충돌 체크
@@ -153,7 +161,6 @@ class Player:
                 self.idle_action, self.charinfo[0].idle_action = self.charinfo[0].idle_action, self.idle_action
 
             if event.key == SDLK_SPACE and self.fall == False:
-                self.frame = 0
                 self.fall = True
                 self.vertical = 16
             if event.key == SDLK_t:

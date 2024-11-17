@@ -71,7 +71,7 @@ class Panda(Monster):
         elif self.state == 'Die':
             self.action = 0
             if int(self.frame) <=8:
-                self.frame = self.frame + player.FRAMES_PER_ACTION/2 * player.ACTION_PER_TIME * game_framework.frame_time
+                self.frame = self.frame + player.FRAMES_PER_ACTION/4 * player.ACTION_PER_TIME * game_framework.frame_time
 
 
 
