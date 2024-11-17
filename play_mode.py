@@ -38,6 +38,7 @@ def init():
     player = player.Player()
     game_world.add_obj(player,1)
     game_world.add_collision_pair('player:block', player, None)
+    game_world.add_collision_pair('player:monster', player, None)
 
     blocks = [
         blocks.Block(30, 176, 82, 22, 600, 175+100, 300, 100),
@@ -52,6 +53,7 @@ def init():
     pandas = [monster.Panda(0, 12, 103, 33, 8, DK_width//2, DK_height//4+50, 100, 100, DK_width//2+250, DK_width//2 - 250)]
     for panda in pandas:
         game_world.add_obj(panda, 1)
+        game_world.add_collision_pair('player:monster', None, panda)
         game_world.add_collision_pair('playerATK:monster', panda, None)
 
 def update():

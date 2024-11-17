@@ -27,7 +27,7 @@ class Block:
         if play_mode.collider_trig:
             draw_rectangle(*self.get_bb())
     def get_bb(self):
-        return self.x - self.size_x // 2, self.y, self.x + self.size_x // 2, self.y + self.size_y // 4
+        return self.x - self.size_x // 2 + 20, self.y, self.x + self.size_x // 2-20, self.y + self.size_y // 4
     def handle_collision(self, group, other):
         if group == 'player:block':
             pass
