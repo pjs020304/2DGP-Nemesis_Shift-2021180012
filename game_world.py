@@ -1,13 +1,17 @@
-world = [[], []]
+world = [[] for _ in range(4)]
 collision_pairs = {}
 
-def add_obj(o, depth):
+def add_obj(o, depth=0):
     world[depth].append(o)
+
+def add_objects(ol, depth = 0):
+    world[depth] += ol
 
 def update():
     for layer in world:
         for o in layer:
             o.update()
+
 def render():
     for layer in world:
         for o in layer:
@@ -29,6 +33,10 @@ def remove_object(o):
             del o
             return # 지우기 끝남
     print('존재하지 않는 객체를 지우려고 시도함')
+
+def clear():
+    for layer in world:
+        layer.clear()
 
 def collide(a, b):
     left_a, bottom_a, right_a, top_a = a.get_bb()
