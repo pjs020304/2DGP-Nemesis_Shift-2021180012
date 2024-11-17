@@ -18,7 +18,7 @@ ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
 FRAMES_PER_ACTION = 8
 
 class CharInfo:
-    def __init__(self, width, height, size_x, size_y, run_action, basic_atk_action, fall_action, idle_action, png, basic_atk_size_x, basic_atk_size_y):
+    def __init__(self, width, height, size_x, size_y, run_action, basic_atk_action, fall_action, idle_action, png, basic_atk_size_x, basic_atk_size_y, skill_atk_action, skill_atk_size_x, skill_atk_size_y):
         self.size_x, self.size_y = size_x, size_y
         self.png = png
         self.image = load_image(png)
@@ -28,7 +28,9 @@ class CharInfo:
         self.basic_atk_action= basic_atk_action
         self.fall_action = fall_action
         self.idle_action = idle_action
-
+        self.skill_atk_action = skill_atk_action
+        self.skill_atk_size_x = skill_atk_size_x
+        self.skill_atk_size_y = skill_atk_size_y
 class Player:
     def __init__(self):
         self.x, self.y = 400,90
@@ -41,6 +43,7 @@ class Player:
         self.panel = load_image('buttonSquare_blue.png')
         self.cliked_e = False
         self.png = 'Sci-fi hero 64x65.png'
+        self.skill_count = get_time()
 
         # 변신할 때 바껴야 할 것들
         self.charinfoexist = [False, False, False]
@@ -49,8 +52,10 @@ class Player:
         self.image = load_image(self.png)
         self.width, self.height = 64, 65
         self.basic_atk_size_x, self.basic_atk_size_y = 100, 50
+        self.skill_atk_size_x, self.skill_atk_size_y = 100, 100
         self.run_action = 11
         self.basic_atk_action= 8
+        self.skill_atk_action = 2
         self.fall_action = 9
         self.idle_action = 18
 
@@ -96,6 +101,13 @@ class Player:
             if self.frame >=4:
                 self.state = 'Idle'
 
+        if self.state == 'Skill_Attack':
+            self.action = self.skill_atk_action
+            self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time//2)
+            if self.frame >=8:
+                self.state = 'Idle'
+                self.skill_count = get_time()
+
         # 땅과의 충돌 체크
         if self.y <= 90:
             self.y = 90
@@ -128,9 +140,15 @@ class Player:
                     0].basic_atk_size_x, self.basic_atk_size_x
                 self.basic_atk_size_y, self.charinfo[0].basic_atk_size_y = self.charinfo[
                     0].basic_atk_size_y, self.basic_atk_size_y
+                self.skill_atk_size_x, self.charinfo[0].skill_atk_size_x = self.charinfo[
+                    0].skill_atk_size_x, self.skill_atk_size_x
+                self.skill_atk_size_y, self.charinfo[0].skill_atk_size_y = self.charinfo[
+                    0].skill_atk_size_y, self.skill_atk_size_y
                 self.run_action, self.charinfo[0].run_action = self.charinfo[0].run_action, self.run_action
                 self.basic_atk_action, self.charinfo[0].basic_atk_action = self.charinfo[
                     0].basic_atk_action, self.basic_atk_action
+                self.skill_atk_action, self.charinfo[0].skill_atk_action = self.charinfo[
+                    0].skill_atk_action, self.skill_atk_action
                 self.fall_action, self.charinfo[0].fall_action = self.charinfo[0].fall_action, self.fall_action
                 self.idle_action, self.charinfo[0].idle_action = self.charinfo[0].idle_action, self.idle_action
 
@@ -158,8 +176,16 @@ class Player:
                     playeratk = attack.PlayerATKMonster(self.x - 25, self.y,self.basic_atk_size_x, self.basic_atk_size_y)
                 game_world.add_obj(playeratk, 1)
                 game_world.add_collision_pair('playerATK:monster', None, playeratk)
-
-                print('왼쪽 버튼 클릭')
+            if event.button == SDL_BUTTON_RIGHT and self.state == 'Idle'and get_time()- self.skill_count > 5:
+                self.frame = 0
+                self.action = self.skill_atk_action
+                self.state = 'Skill_Attack'
+                if self.x < self.mx:
+                    playeratk = attack.PlayerATKMonster(self.x + 25, self.y, self.skill_atk_size_x, self.skill_atk_size_y)
+                else:
+                    playeratk = attack.PlayerATKMonster(self.x - 25, self.y,self.skill_atk_size_x, self.skill_atk_size_y)
+                game_world.add_obj(playeratk, 1)
+                game_world.add_collision_pair('playerATK:monster', None, playeratk)
         elif event.type == SDL_MOUSEMOTION:
             self.mx, self.my = event.x , play_mode.DK_height - 1 - event.y
     def draw(self):
@@ -194,7 +220,7 @@ class Player:
             self.corpse = True
             if self.cliked_e:
                 self.charinfoexist[0] = True
-                self.charinfo.append(CharInfo(other.width, other.height, other.size_x, other.size_y, other.run_action, other.basic_atk_action, other.fall_action,other.idle_action, other.png, other.basic_atk_size_x, other.basic_atk_size_y))
+                self.charinfo.append(CharInfo(other.width, other.height, other.size_x, other.size_y, other.run_action, other.basic_atk_action, other.fall_action,other.idle_action, other.png, other.basic_atk_size_x, other.basic_atk_size_y, other.skill_atk_action, other.skill_atk_size_x, other.skill_atk_size_y))
                 game_world.remove_object(other)
         else:
             self.corpse = False

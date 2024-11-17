@@ -52,9 +52,11 @@ class Panda(Monster):
         self.image = load_image('Tiny Panda Evil Version 103x33.png')
         self.run_action = 12
         self.basic_atk_action= 3
+        self.skill_atk_action = 6
+        self.basic_atk_size_x, self.basic_atk_size_y = 130, 50
+        self.skill_atk_size_x, self.skill_atk_size_y = 180, 100
         self.fall_action = 11
         self.idle_action = 13
-        self.basic_atk_size_x, self.basic_atk_size_y = 150, 50
         self.png = 'Tiny Panda Evil Version 103x33.png'
     def update(self):
         self.action = 12
