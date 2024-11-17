@@ -1,4 +1,6 @@
 from pico2d import *
+from pygame.draw_py import clip_line
+
 import play_mode
 import game_framework
 import attack
@@ -15,9 +17,15 @@ TIME_PER_ACTION = 0.5
 ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
 FRAMES_PER_ACTION = 8
 
-class Information:
-    def __init__(self, width, height,frame_count, position_x, position_y, size_x, size_y, max_x, min_x):
-        pass
+class CharInfo:
+    def __init__(self, width, height, size_x, size_y, run_action, basic_atk_action, fall_action, idle_action, png):
+        self.size_x, self.size_y = size_x, size_y
+        self.image = load_image(png)
+        self.width, self.height = width, height
+        self.run_action = run_action
+        self.basic_atk_action= basic_atk_action
+        self.fall_action = fall_action
+        self.idle_action = idle_action
 
 class Player:
     def __init__(self):
@@ -28,11 +36,16 @@ class Player:
         self.state = 'Idle'
         self.action = 0
         self.corpse = False
+        self.panel = load_image('buttonSquare_blue.png')
+        self.cliked_e = False
 
         # 변신할 때 바껴야 할 것들
+        self.charinfoexist = [False, False, False]
+        self.charinfo = []
         self.size_x, self.size_y = 120, 120
         self.image = load_image('Sci-fi hero 64x65.png')
         self.width, self.height = 64, 65
+        self.basic_atk_size_x, self.basic_atk_size_y = 100, 50
         self.run_action = 11
         self.basic_atk_action= 8
         self.fall_action = 9
@@ -97,6 +110,8 @@ class Player:
                 self.dir -=1
             if event.key == SDLK_d:
                 self.dir +=1
+            if event.key == SDLK_e:
+                self.cliked_e = True
             if event.key == SDLK_SPACE and self.fall == False:
                 self.frame = 0
                 self.fall = True
@@ -108,15 +123,17 @@ class Player:
                 self.dir +=1
             if event.key == SDLK_d:
                 self.dir -=1
+            if event.key == SDLK_e:
+                self.cliked_e = False
         elif event.type == SDL_MOUSEBUTTONDOWN:
             if event.button == SDL_BUTTON_LEFT and self.state == 'Idle':
                 self.frame = 0
                 self.action = self.basic_atk_action
                 self.state = 'Basic_Attack'
                 if self.x < self.mx:
-                    playeratk = attack.PlayerATKMonster(self.x + 25, self.y, 100, 50)
+                    playeratk = attack.PlayerATKMonster(self.x + 25, self.y, self.basic_atk_size_x, self.basic_atk_size_y)
                 else:
-                    playeratk = attack.PlayerATKMonster(self.x - 25, self.y, 100, 50)
+                    playeratk = attack.PlayerATKMonster(self.x - 25, self.y,self.basic_atk_size_x, self.basic_atk_size_y)
                 game_world.add_obj(playeratk, 1)
                 game_world.add_collision_pair('playerATK:monster', None, playeratk)
 
@@ -135,6 +152,11 @@ class Player:
             self.font.draw(self.x - 10, self.y + 50, 'E', (255, 255, 0))
         if play_mode.collider_trig:
             draw_rectangle(*self.get_bb())
+        self.panel.draw(100, 600, 180, 180)
+        if self.charinfoexist[0]:
+            self.charinfo[0].image.clip_draw(0* self.charinfo[0].width, 0 * self.charinfo[0].height, self.charinfo[0].width, self.charinfo[0].height, 100, 600, 180, 180)
+
+
 
     def get_bb(self):
         return self.x-self.size_x//4, self.y-self.size_y//4, self.x+self.size_x//4, self.y+self.size_y//4
@@ -148,5 +170,9 @@ class Player:
             pass
         if group == 'player:monster' and other.state == 'Die':
             self.corpse = True
+            if self.cliked_e:
+                self.charinfoexist[0] = True
+                self.charinfo.append(CharInfo(other.width, other.height, other.size_x, other.size_y, other.run_action, other.basic_atk_action, other.fall_action,other.idle_action, other.png))
+                game_world.remove_object(other)
         else:
             self.corpse = False

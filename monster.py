@@ -50,7 +50,11 @@ class Panda(Monster):
     def __init__(self, frame_x, action_y, width, height, frame_count, position_x, position_y, size_x, size_y, max_x,min_x):
         super().__init__(frame_x, action_y, width, height, frame_count, position_x, position_y, size_x, size_y, max_x,min_x)
         self.image = load_image('Tiny Panda Evil Version 103x33.png')
-
+        self.run_action = 12
+        self.basic_atk_action= 4
+        self.fall_action = 11
+        self.idle_action = 13
+        self.png = 'Tiny Panda Evil Version 103x33.png'
     def update(self):
         self.action = 12
         super().update()
