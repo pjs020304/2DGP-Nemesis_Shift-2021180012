@@ -110,7 +110,7 @@ class Player:
 
     def handle_collision(self, group, other):
         if group == 'player:block' and self.vertical < 0:
-            self.y = other.y + (other.size_y // 2) + 25  # 블록 위에 위치
+            self.y = other.y + (other.size_y // 4) + 10   # 블록 위에 위치
             self.vertical = 0
             self.fall = False
             self.min_x, self.max_x = other.x - (other.size_x // 2), other.x + (other.size_x // 2)

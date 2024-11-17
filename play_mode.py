@@ -39,8 +39,8 @@ def init():
     game_world.add_collision_pair('player:block', player, None)
 
     blocks = [
-        blocks.Block(0, 62, 45, 18, DK_width, DK_height//2, 300, 100),
-        blocks.Block(0, 62, 45, 18, DK_width//2, DK_height//4, 150, 100)
+        blocks.Block(30, 176, 82, 22, DK_width, DK_height//2, 300, 100),
+        blocks.Block(30, 176, 82, 22, DK_width//2, DK_height//4, 150, 100)
     ]
     for block in blocks:
         game_world.add_obj(block, 0)

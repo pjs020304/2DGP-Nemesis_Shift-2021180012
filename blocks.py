@@ -11,7 +11,7 @@ class Block:
         self.size_x, self.size_y = size_x, size_y
 
         # self.image = load_image('DARK Edition Tileset No background.png')
-        self.image = load_image('layer 1.png')
+        self.image = load_image('DARK Edition Tileset No background.png')
 
     def update(self):
         if play_mode.player.dir == 1:
@@ -27,7 +27,7 @@ class Block:
         if play_mode.collider_trig:
             draw_rectangle(*self.get_bb())
     def get_bb(self):
-        return self.x - self.size_x // 2, self.y+ self.size_y // 4, self.x + self.size_x // 2, self.y + self.size_y // 2
+        return self.x - self.size_x // 2, self.y, self.x + self.size_x // 2, self.y + self.size_y // 4
     def handle_collision(self, group, other):
         if group == 'player:block':
             pass
