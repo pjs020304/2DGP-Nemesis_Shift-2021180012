@@ -42,7 +42,7 @@ def init():
 
     blocks = [
         blocks.Block(30, 176, 82, 22, 600, 175+100, 300, 100),
-        blocks.Block(30, 176, 82, 22, DK_width//2, DK_height//4, 500, 100)
+        blocks.Block(30, 176, 82, 22, 1000, 175, 500, 100)
     ]
     for block in blocks:
         game_world.add_obj(block, 0)
@@ -50,7 +50,10 @@ def init():
     for block in blocks:
         game_world.add_collision_pair('player:block', None, block)
 
-    pandas = [monster.Panda(0, 12, 103, 33, 8, DK_width//2, DK_height//4+50, 150, 100, DK_width//2+250, DK_width//2 - 250)]
+    pandas = [
+        monster.Panda(0, 12, 103, 33, 8, 1000, 225, 150, 100, 1000+250, 1000 - 250),
+        monster.Panda(0, 12, 103, 33, 8, 600, 275+50, 150, 100, 600 + 150, 600-150)
+    ]
     for panda in pandas:
         game_world.add_obj(panda, 1)
         game_world.add_collision_pair('player:monster', None, panda)

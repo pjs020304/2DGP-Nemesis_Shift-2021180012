@@ -41,7 +41,7 @@ class Monster:
         if play_mode.collider_trig:
             draw_rectangle(*self.get_bb())
     def get_bb(self):
-        return self.x-self.size_x//4, self.y-self.size_y//4, self.x+self.size_x//4, self.y+self.size_y//4
+        return self.x-self.size_x//5, self.y-self.size_y//4, self.x+self.size_x//5, self.y+self.size_y//4
 
 
 
