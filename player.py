@@ -203,13 +203,18 @@ class Player:
                 self.image.clip_composite_draw(int(self.frame) * self.width, self.action * self.height, self.width, self.height,0,'h', self.x, self.y, self.size_x, self.size_y)
         else:
             self.image.clip_draw(int(self.frame)* self.width, self.action * self.height, self.width, self.height, self.x, self.y, self.size_x, self.size_y)
-        if self.corpse:
-            self.font.draw(self.x - 10, self.y + 50, 'E', (255, 255, 0))
+
         if play_mode.collider_trig:
             draw_rectangle(*self.get_bb())
         self.panel.draw(100, 600, 180, 180)
         if self.charinfoexist[0]:
             self.charinfo[0].image.clip_draw(0* self.charinfo[0].width, 0 * self.charinfo[0].height, self.charinfo[0].width, self.charinfo[0].height, 100, 600, 180, 180)
+        if self.corpse:
+            self.font.draw(self.x, self.y + self.size_y // 4, '[E]', (255, 255, 0))
+        if get_time()- self.skill_count > 5:
+            self.font.draw(self.x-50, self.y +self.size_y//4+ 25, 'Skill Ready', (0, 191, 255))
+        else:
+            self.font.draw(self.x-50, self.y +self.size_y//4+ 25, f'(Cooldown: {5-get_time()+self.skill_count:.2f})', (0, 191, 255))
 
 
 
