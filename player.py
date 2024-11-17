@@ -1,6 +1,9 @@
 from pico2d import *
 import play_mode
 import game_framework
+import attack
+import game_world
+
 # 움직임 속도
 PIXEL_PER_METER = (10.0 / 0.3) # 10 pixel 30 cm
 RUN_SPEED_KMPH = 20.0 # Km / Hour
@@ -92,6 +95,10 @@ class Player:
                 self.frame = 0
                 self.action = 8
                 self.state = 'Basic_Attack'
+                if self.x < self.mx:
+                    playeratk = attack.PlayerATKMonster(self.x + 50, self.y, 100, 100)
+                    game_world.add_obj(playeratk, 1)
+                    game_world.add_collision_pair('playerATK:monster', None, playeratk)
                 print('왼쪽 버튼 클릭')
         elif event.type == SDL_MOUSEMOTION:
             self.mx, self.my = event.x , play_mode.DK_height - 1 - event.y

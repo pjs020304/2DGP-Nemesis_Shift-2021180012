@@ -15,27 +15,22 @@ class Monster:
 
         self.state = 'Idle'
     def update(self):
-        self.x += self.dir * player.RUN_SPEED_PPS * game_framework.frame_time
-        self.frame = (self.frame + player.FRAMES_PER_ACTION * player.ACTION_PER_TIME * game_framework.frame_time) % self.frame_count
-        if play_mode.player.dir == 1:
-            if play_mode.player.x >= 700:
-                self.x -= player.RUN_SPEED_PPS * game_framework.frame_time
-                self.max_x-=player.RUN_SPEED_PPS * game_framework.frame_time
-                self.min_x-=player.RUN_SPEED_PPS * game_framework.frame_time
-        elif play_mode.player.dir == -1:
-            if play_mode.player.x <= 300:
-                self.x += player.RUN_SPEED_PPS * game_framework.frame_time
-                self.max_x+=player.RUN_SPEED_PPS * game_framework.frame_time
-                self.min_x+=player.RUN_SPEED_PPS * game_framework.frame_time
+        if self.state != 'Die':
+            self.x += self.dir * player.RUN_SPEED_PPS * game_framework.frame_time
+            self.frame = (self.frame + player.FRAMES_PER_ACTION * player.ACTION_PER_TIME * game_framework.frame_time) % self.frame_count
+            if play_mode.player.dir == 1:
+                if play_mode.player.x >= 700:
+                    self.x -= player.RUN_SPEED_PPS * game_framework.frame_time
+                    self.max_x-=player.RUN_SPEED_PPS * game_framework.frame_time
+                    self.min_x-=player.RUN_SPEED_PPS * game_framework.frame_time
+            elif play_mode.player.dir == -1:
+                if play_mode.player.x <= 300:
+                    self.x += player.RUN_SPEED_PPS * game_framework.frame_time
+                    self.max_x+=player.RUN_SPEED_PPS * game_framework.frame_time
+                    self.min_x+=player.RUN_SPEED_PPS * game_framework.frame_time
 
-        if self.x >= self.max_x or self.x <= self.min_x:
-            self.dir = self.dir*(-1)
-
-        if self.state == 'Basic_Attack':
-            self.action = 8
-            self.frame = (self.frame + player.FRAMES_PER_ACTION * player.ACTION_PER_TIME * game_framework.frame_time//3)
-            if self.frame >=4:
-                self.state = 'Idle'
+            if self.x >= self.max_x or self.x <= self.min_x:
+                self.dir = self.dir*(-1)
     def handle_event(self, event):
         pass
     def draw(self):
@@ -46,7 +41,7 @@ class Monster:
         if play_mode.collider_trig:
             draw_rectangle(*self.get_bb())
     def get_bb(self):
-        return self.x-self.size_x*4, self.y-self.size_y*4, self.x+self.size_x*4, self.y+self.size_y*4
+        return self.x-self.size_x//2, self.y-self.size_y//2, self.x+self.size_x//2, self.y+self.size_y//2
 
 
 
@@ -66,6 +61,14 @@ class Panda(Monster):
             if self.frame >=4:
                 self.state = 'Idle'
 
+        elif self.state == 'Die':
+            self.action = 0
+            if int(self.frame) <=8:
+                self.frame = (self.frame + player.FRAMES_PER_ACTION * player.ACTION_PER_TIME * game_framework.frame_time)
+
+
+
     def handle_collision(self, group, other):
-        if group == 'player:monster':
-            pass
+        if group == 'playerATK:monster':
+            self.state = 'Die'
+            self.dir = 0
