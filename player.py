@@ -18,10 +18,12 @@ ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
 FRAMES_PER_ACTION = 8
 
 class CharInfo:
-    def __init__(self, width, height, size_x, size_y, run_action, basic_atk_action, fall_action, idle_action, png):
+    def __init__(self, width, height, size_x, size_y, run_action, basic_atk_action, fall_action, idle_action, png, basic_atk_size_x, basic_atk_size_y):
         self.size_x, self.size_y = size_x, size_y
+        self.png = png
         self.image = load_image(png)
         self.width, self.height = width, height
+        self.basic_atk_size_x, self.basic_atk_size_y =  basic_atk_size_x, basic_atk_size_y
         self.run_action = run_action
         self.basic_atk_action= basic_atk_action
         self.fall_action = fall_action
@@ -38,12 +40,13 @@ class Player:
         self.corpse = False
         self.panel = load_image('buttonSquare_blue.png')
         self.cliked_e = False
+        self.png = 'Sci-fi hero 64x65.png'
 
         # 변신할 때 바껴야 할 것들
         self.charinfoexist = [False, False, False]
         self.charinfo = []
         self.size_x, self.size_y = 120, 120
-        self.image = load_image('Sci-fi hero 64x65.png')
+        self.image = load_image(self.png)
         self.width, self.height = 64, 65
         self.basic_atk_size_x, self.basic_atk_size_y = 100, 50
         self.run_action = 11
@@ -56,6 +59,7 @@ class Player:
         self.fall = False
         self.min_x, self.max_x = 0, 1000
         self.mx, self.my = 0,0
+
     def update(self):
 
         if self.dir == -1:
@@ -112,6 +116,24 @@ class Player:
                 self.dir +=1
             if event.key == SDLK_e:
                 self.cliked_e = True
+            if event.key == SDLK_1 and self.charinfoexist[0]:
+                self.size_x, self.charinfo[0].size_x = self.charinfo[0].size_x, self.size_x
+                self.size_y, self.charinfo[0].size_y = self.charinfo[0].size_y, self.size_y
+                self.png, self.charinfo[0].png = self.charinfo[0].png, self.png
+                self.image = load_image(self.png)
+                self.charinfo[0].image = load_image(self.charinfo[0].png)
+                self.width, self.charinfo[0].width = self.charinfo[0].width,self.width
+                self.height, self.charinfo[0].height =  self.charinfo[0].height,self.height
+                self.basic_atk_size_x, self.charinfo[0].basic_atk_size_x = self.charinfo[
+                    0].basic_atk_size_x, self.basic_atk_size_x
+                self.basic_atk_size_y, self.charinfo[0].basic_atk_size_y = self.charinfo[
+                    0].basic_atk_size_y, self.basic_atk_size_y
+                self.run_action, self.charinfo[0].run_action = self.charinfo[0].run_action, self.run_action
+                self.basic_atk_action, self.charinfo[0].basic_atk_action = self.charinfo[
+                    0].basic_atk_action, self.basic_atk_action
+                self.fall_action, self.charinfo[0].fall_action = self.charinfo[0].fall_action, self.fall_action
+                self.idle_action, self.charinfo[0].idle_action = self.charinfo[0].idle_action, self.idle_action
+
             if event.key == SDLK_SPACE and self.fall == False:
                 self.frame = 0
                 self.fall = True
@@ -159,11 +181,11 @@ class Player:
 
 
     def get_bb(self):
-        return self.x-self.size_x//4, self.y-self.size_y//4, self.x+self.size_x//4, self.y+self.size_y//4
+        return self.x-self.size_x//5, self.y-self.size_y//4, self.x+self.size_x//5, self.y+self.size_y//4
 
     def handle_collision(self, group, other):
         if group == 'player:block' and self.vertical < 0:
-            self.y = other.y + (other.size_y // 4) + 10   # 블록 위에 위치
+            self.y = other.y + (other.size_y // 4) + 15  # 블록 위에 위치
             self.vertical = 0
             self.fall = False
             self.min_x, self.max_x = other.x - (other.size_x // 2), other.x + (other.size_x // 2)
@@ -172,7 +194,7 @@ class Player:
             self.corpse = True
             if self.cliked_e:
                 self.charinfoexist[0] = True
-                self.charinfo.append(CharInfo(other.width, other.height, other.size_x, other.size_y, other.run_action, other.basic_atk_action, other.fall_action,other.idle_action, other.png))
+                self.charinfo.append(CharInfo(other.width, other.height, other.size_x, other.size_y, other.run_action, other.basic_atk_action, other.fall_action,other.idle_action, other.png, other.basic_atk_size_x, other.basic_atk_size_y))
                 game_world.remove_object(other)
         else:
             self.corpse = False
