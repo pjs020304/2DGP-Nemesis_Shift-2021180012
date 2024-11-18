@@ -2,10 +2,11 @@ from pico2d import *
 import game_world
 import game_framework
 import pause_mode
-import player
-import blocks
+import player as character
+import blocks as bridge
 import background
 import monster
+import start_mode
 
 def handle_events():
     global running
@@ -16,11 +17,12 @@ def handle_events():
             game_framework.quit()
         elif event.type == SDL_KEYDOWN and event.key == SDLK_ESCAPE:
             game_framework.push_mode(pause_mode)
+        elif event.type == SDL_KEYDOWN and event.key == SDLK_r:
+            game_framework.change_mode(start_mode)
         else:
             player.handle_event(event)
 
 def init():
-    global running
     global player
     global gravity
     global blocks
@@ -30,19 +32,18 @@ def init():
 
     collider_trig = False
     gravity = 1
-    running = True
 
     backgrounds = background.BackGround()
     game_world.add_obj(backgrounds,0)
 
-    player = player.Player()
+    player = character.Player()
     game_world.add_obj(player,1)
     game_world.add_collision_pair('player:block', player, None)
     game_world.add_collision_pair('player:monster', player, None)
 
     blocks = [
-        blocks.Block(30, 176, 82, 22, 600, 175+100, 300, 100),
-        blocks.Block(30, 176, 82, 22, 1000, 175, 500, 100)
+        bridge.Block(30, 176, 82, 22, 600, 175+100, 300, 100),
+        bridge.Block(30, 176, 82, 22, 1000, 175, 500, 100)
     ]
     for block in blocks:
         game_world.add_obj(block, 0)
@@ -68,7 +69,22 @@ def draw():
     update_canvas()
 
 def finish():
-    pass
+    # game_world.clear()
+    global player
+    game_world.remove_object(player)
+    del player
+    global gravity
+    del gravity
+    global blocks
+    for block in blocks:
+        game_world.remove_object(block)
+    del blocks
+    global collider_trig
+    del collider_trig
+    global pandas
+    for panda in pandas:
+        game_world.remove_object(panda)
+    del pandas
 DK_width, DK_height = 1000, 700
 
 def pause():
