@@ -18,7 +18,7 @@ ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
 FRAMES_PER_ACTION = 8
 
 class CharInfo:
-    def __init__(self, width, height, size_x, size_y, run_action, basic_atk_action, fall_action, idle_action, png, basic_atk_size_x, basic_atk_size_y, skill_atk_action, skill_atk_size_x, skill_atk_size_y):
+    def __init__(self, width, height, size_x, size_y, run_action, basic_atk_action, fall_action, idle_action, png, basic_atk_size_x, basic_atk_size_y, skill_atk_action, skill_atk_size_x, skill_atk_size_y, maxhp):
         self.size_x, self.size_y = size_x, size_y
         self.png = png
         self.image = load_image(png)
@@ -31,6 +31,7 @@ class CharInfo:
         self.skill_atk_action = skill_atk_action
         self.skill_atk_size_x = skill_atk_size_x
         self.skill_atk_size_y = skill_atk_size_y
+        self.hp = maxhp
 class Player:
     def __init__(self):
         self.x, self.y = 400,90
@@ -44,8 +45,10 @@ class Player:
         self.cliked_e = False
         self.png = 'Sci-fi hero 64x65.png'
         self.skill_count = get_time()
+        self.hp_png = load_image('health_bar.png')
 
         # 변신할 때 바껴야 할 것들
+        self.hp = 3
         self.charinfoexist = [False, False, False]
         self.charinfo = []
         self.size_x, self.size_y = 120, 120
@@ -101,7 +104,7 @@ class Player:
 
         if self.state == 'Basic_Attack':
             self.action = self.basic_atk_action
-            self.frame = self.frame + FRAMES_PER_ACTION/2 * ACTION_PER_TIME * game_framework.frame_time
+            self.frame = self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time
             if self.frame >=4:
                 self.frame = 0
                 self.action = self.idle_action
@@ -159,6 +162,7 @@ class Player:
                     0].skill_atk_action, self.skill_atk_action
                 self.fall_action, self.charinfo[0].fall_action = self.charinfo[0].fall_action, self.fall_action
                 self.idle_action, self.charinfo[0].idle_action = self.charinfo[0].idle_action, self.idle_action
+                self.hp, self.charinfo[0].hp = self.charinfo[0].hp, self.hp
 
             if event.key == SDLK_SPACE and self.fall == False:
                 self.fall = True
@@ -215,6 +219,8 @@ class Player:
             self.font.draw(self.x-50, self.y +self.size_y//4+ 25, 'Skill Ready', (0, 191, 255))
         else:
             self.font.draw(self.x-50, self.y +self.size_y//4+ 25, f'(Cooldown: {5-get_time()+self.skill_count:.2f})', (0, 191, 255))
+        for i in range(self.hp):
+            self.hp_png.draw(300 + i*100, 50, 100, 50)
 
 
 
@@ -232,7 +238,12 @@ class Player:
             self.corpse = True
             if self.cliked_e:
                 self.charinfoexist[0] = True
-                self.charinfo.append(CharInfo(other.width, other.height, other.size_x, other.size_y, other.run_action, other.basic_atk_action, other.fall_action,other.idle_action, other.png, other.basic_atk_size_x, other.basic_atk_size_y, other.skill_atk_action, other.skill_atk_size_x, other.skill_atk_size_y))
+                self.charinfo.append(CharInfo(other.width, other.height, other.size_x, other.size_y, other.run_action, other.basic_atk_action, other.fall_action,other.idle_action, other.png, other.basic_atk_size_x, other.basic_atk_size_y, other.skill_atk_action, other.skill_atk_size_x, other.skill_atk_size_y, other.maxhp))
                 game_world.remove_object(other)
         else:
             self.corpse = False
+        if group == 'monsterATK:player':
+            self.hp -=1
+            self.y +=20
+            self.vertical += 5
+            self.fall = True
