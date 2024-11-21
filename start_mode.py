@@ -8,7 +8,7 @@ import play_mode
 
 def init():
     global image
-    image = load_image('Start_UI.jpg')
+    image = load_image('Resource\\Start_UI.jpg')
 
 def finish():
     global image

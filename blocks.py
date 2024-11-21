@@ -11,7 +11,7 @@ class Block:
         self.size_x, self.size_y = size_x, size_y
 
         # self.image = load_image('DARK Edition Tileset No background.png')
-        self.image = load_image('DARK Edition Tileset No background.png')
+        self.image = load_image('Resource\\DARK Edition Tileset No background.png')
 
     def update(self):
         if play_mode.player.dir == 1:

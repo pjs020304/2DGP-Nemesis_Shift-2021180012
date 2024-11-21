@@ -22,7 +22,7 @@ class Pannel:
 
 def init():
     global pannels
-    pannels = [Pannel('UI_continue.png', play_mode.DK_width//2, play_mode.DK_height//2+200, 600, 100), Pannel('UI_option.png',play_mode.DK_width//2, play_mode.DK_height//2, 600, 100), Pannel('UI_quit.png',play_mode.DK_width//2, play_mode.DK_height//2-200, 600, 100)]
+    pannels = [Pannel('Resource\\UI_continue.png', play_mode.DK_width//2, play_mode.DK_height//2+200, 600, 100), Pannel('Resource\\dk_UI_option.png',play_mode.DK_width//2, play_mode.DK_height//2, 600, 100), Pannel('Resource\\DK_UI_quit.png',play_mode.DK_width//2, play_mode.DK_height//2-200, 600, 100)]
 
 
     for pannel in pannels:

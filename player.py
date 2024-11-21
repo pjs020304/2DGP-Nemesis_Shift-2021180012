@@ -35,17 +35,17 @@ class CharInfo:
 class Player:
     def __init__(self):
         self.x, self.y = 400,90
-        self.font = load_font('ENCR10B.TTF', 20)
+        self.font = load_font('Resource\\ENCR10B.TTF', 20)
         self.frame = 0
         self.dir = 0
         self.state = 'Idle'
         self.action = 0
         self.corpse = False
-        self.panel = load_image('buttonSquare_blue.png')
+        self.panel = load_image("Resource\\buttonSquare_blue.png")
         self.cliked_e = False
-        self.png = 'Sci-fi hero 64x65.png'
+        self.png = 'Resource\\Sci-fi hero 64x65.png'
         self.skill_count = get_time()
-        self.hp_png = load_image('health_bar.png')
+        self.hp_png = load_image('Resource\\health_bar.png')
 
         # 변신할 때 바껴야 할 것들
         self.hp = 3

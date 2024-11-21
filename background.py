@@ -4,11 +4,11 @@ import player
 import game_framework
 class BackGround:
     def __init__(self):
-        self.layer1 = load_image('layer 1.png')
-        self.layer2 = load_image('layer 2.png')
-        self.layer3 = load_image('layer 3.png')
-        self.layer4 = load_image('layer 4.png')
-        self.layer5 = load_image('layer 5.png')
+        self.layer1 = load_image('Resource\\layer 1.png')
+        self.layer2 = load_image('Resource\\layer 2.png')
+        self.layer3 = load_image('Resource\\layer 3.png')
+        self.layer4 = load_image('Resource\\layer 4.png')
+        self.layer5 = load_image('Resource\\layer 5.png')
         self.x = [play_mode.DK_width // 2, play_mode.DK_width // 2, play_mode.DK_width // 2, play_mode.DK_width // 2, play_mode.DK_width // 2]
         self.y = [play_mode.DK_height//2,play_mode.DK_height//2,play_mode.DK_height//2,play_mode.DK_height//2,play_mode.DK_height//2]
         self.speed = 1
