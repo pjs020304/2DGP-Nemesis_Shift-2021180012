@@ -29,6 +29,7 @@ def init():
     global DK_width, DK_height
     global collider_trig
     global pandas
+    global dustjumpers
 
     collider_trig = False
     gravity = 1
@@ -60,6 +61,15 @@ def init():
         game_world.add_obj(panda, 1)
         game_world.add_collision_pair('player:monster', None, panda)
         game_world.add_collision_pair('playerATK:monster', panda, None)
+
+    dustjumpers = [
+        monster.DustJumper(0, 12, 42, 91, 8, 900, 225, 150, 100, 1000 + 250, 1000 - 250),
+        monster.DustJumper(0, 12, 42, 91, 8, 550, 275 + 50, 150, 100, 600 + 150, 600 - 150)
+    ]
+    for dustjumper in dustjumpers:
+        game_world.add_obj(dustjumper, 1)
+        game_world.add_collision_pair('player:monster', None, dustjumper)
+        game_world.add_collision_pair('playerATK:monster', dustjumper, None)
 
 def update():
     game_world.update()

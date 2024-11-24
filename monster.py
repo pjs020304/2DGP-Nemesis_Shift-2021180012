@@ -107,3 +107,58 @@ class Panda(Monster):
             if self.currenthp <=0:
                 self.state = 'Die'
                 self.dir = 0
+
+
+class DustJumper(Monster):
+    def __init__(self, frame_x, action_y, width, height, frame_count, position_x, position_y, size_x, size_y, max_x,min_x):
+        super().__init__(frame_x, action_y, width, height, frame_count, position_x, position_y, size_x, size_y, max_x,min_x)
+        self.image = load_image('Resource\\Dust Jumper Sprite Sheet 42x91.png')
+        self.run_action = 4
+        self.basic_atk_action= 7
+        self.skill_atk_action = -1
+        self.basic_atk_size_x, self.basic_atk_size_y = 200, 50
+        self.skill_atk_size_x, self.skill_atk_size_y = -1, -1
+        self.fall_action = 6
+        self.idle_action = 8
+        self.currenthp =2
+        self.maxhp = 2
+        self.png = 'Resource\\Dust Jumper Sprite Sheet 42x91.png'
+    def update(self):
+        self.action = self.run_action
+        super().update()
+
+        if self.state == 'Basic_Attack':
+            self.action = self.basic_atk_action
+            self.frame = (self.frame + player.FRAMES_PER_ACTION * player.ACTION_PER_TIME * game_framework.frame_time)
+            if self.frame >=4:
+                self.action = self.idle_action
+                self.state = 'Idle'
+                self.frame = 0
+                self.current_time = get_time()
+        elif self.state == 'Die':
+            self.action = 0
+            if int(self.frame) <=8:
+                self.frame = self.frame + player.FRAMES_PER_ACTION/4 * player.ACTION_PER_TIME * game_framework.frame_time
+
+        if get_time() - self.current_time > self.attack_cooldown and self.state != 'Die':
+            if self.dir == 1:
+                monsteratk = attack.MonsterATKPlayer(self.x + 25, self.y, self.basic_atk_size_x, self.basic_atk_size_y)
+            elif self.dir == -1:
+                monsteratk = attack.MonsterATKPlayer(self.x - 25, self.y, self.basic_atk_size_x, self.basic_atk_size_y)
+            game_world.add_obj(monsteratk, 1)
+            game_world.add_collision_pair('monsterATK:player', monsteratk, None)
+            self.frame = 0
+            self.state = 'Basic_Attack'
+            self.current_time = get_time()
+
+    def draw(self):
+        super().draw()
+        for i in range(self.currenthp):
+            self.hp_png.draw(self.x-40 + i*20, self.y+20, 20, 30)
+
+    def handle_collision(self, group, other):
+        if group == 'playerATK:monster':
+            self.currenthp -=1
+            if self.currenthp <=0:
+                self.state = 'Die'
+                self.dir = 0
