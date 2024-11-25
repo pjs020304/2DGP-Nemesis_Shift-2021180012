@@ -1,5 +1,5 @@
 from random import randint
-
+from behavior_tree import BehaviorTree, Action, Sequence, Condition, Selector
 from pico2d import *
 import play_mode
 import game_framework
@@ -18,13 +18,15 @@ class Monster:
         self.size_x, self.size_y = size_x, size_y
         self.max_x, self.min_x = max_x, min_x
         self.hp_png = load_image('Resource\\health_bar.png')
-        self.state = 'Idle'
+        self.state = 'Walk'
         self.current_time = get_time()
         self.attack_cooldown = randint(3,6)
+        self.build_behavior_tree()
+
     def update(self):
         if self.state != 'Die':
             self.x += self.dir * player.RUN_SPEED_PPS * game_framework.frame_time
-            if self.state == 'Idle':
+            if self.state == 'Walk':
                 self.frame = (self.frame + player.FRAMES_PER_ACTION * player.ACTION_PER_TIME * game_framework.frame_time) % self.frame_count
         if play_mode.player.dir == 1:
             if play_mode.player.x >= 700:
@@ -51,8 +53,60 @@ class Monster:
     def get_bb(self):
         return self.x-self.size_x//5, self.y-self.size_y//4, self.x+self.size_x//5, self.y+self.size_y//4
 
+    def set_target_location(self, x=None, y=None):
+        self.tx, self.ty = x, y
+        return BehaviorTree.SUCCESS
+    def distance_less_than(self, x1, y1, x2, y2, r):
+        distance2 = (x1 - x2) ** 2 + (y1 - y2) ** 2
+        return distance2 < (play_mode.PIXEL_PER_METER * r) ** 2
+    def move_slightly_to(self, tx, ty):
+        self.dir = math.atan2(ty - self.y, tx - self.x)
+        distance = play_mode.RUN_SPEED_PPS * game_framework.frame_time
+        self.x += distance * math.cos(self.dir)
+        self.y += distance * math.sin(self.dir)
+    def set_random_location(self):
+        self.tx, self.ty = random.randint(self.min_x, self.y), random.randint(self.min_x, self.y)
+        return BehaviorTree.SUCCESS
+    def move_to(self, r=0.5):
+        self.state = 'Walk'
+        self.move_slightly_to(self.tx, self.ty)
+        if self.distance_less_than(self.tx, self.ty, self.x, self.y, r):
+            return BehaviorTree.SUCCESS
+        else:
+            return BehaviorTree.RUNNING
+    def is_boy_nearby(self, distance):
+        if self.distance_less_than(play_mode.boy.x, play_mode.boy.y, self.x, self.y, distance):
+            return BehaviorTree.SUCCESS
+        else:
+            return BehaviorTree.FAIL
+    def attack_player(self):
+        self.state = 'Basic_Attack'
+        self.move_slightly_to(self.tx, self.ty)
+        if get_time() - self.current_time > self.attack_cooldown and self.state != 'Die':
+            if self.dir == 1:
+                monsteratk = attack.MonsterATKPlayer(self.x + 25, self.y, self.basic_atk_size_x, self.basic_atk_size_y)
+            elif self.dir == -1:
+                monsteratk = attack.MonsterATKPlayer(self.x - 25, self.y, self.basic_atk_size_x, self.basic_atk_size_y)
+            game_world.add_obj(monsteratk, 1)
+            game_world.add_collision_pair('monsterATK:player', monsteratk, None)
+            self.frame = 0
+            self.state = 'Basic_Attack'
+            self.current_time = get_time()
+    def build_behavior_tree(self):
+        # a1 = Action('Set target lacation', self.set_target_location(), 1000,1000)
+        # root = self.move_to_target_location = Sequence('Move to target location', a1, a2)
 
+        a1 = Action('Move to', self.move_to)
+        a2 = Action('Set random location', self.set_random_location)
+        root = wander = Sequence('Wander', a2, a1)
 
+        c1 = Condition('소년이 근처에 있는가?', self.is_boy_nearby, 7)
+        a3 = Action('Attack player', self.attack_player)
+        root = chase_boy = Sequence('소년을 추적', c1, a3)
+
+        # root = runaway_chase_or_flee = Selector('추적 또는 후퇴 또는 배회', run_away_boy, chase_boy, wander)
+
+        self.bt = BehaviorTree(root)
 
 class Panda(Monster):
     def __init__(self, frame_x, action_y, width, height, frame_count, position_x, position_y, size_x, size_y, max_x,min_x):
@@ -77,24 +131,13 @@ class Panda(Monster):
             self.frame = (self.frame + player.FRAMES_PER_ACTION * player.ACTION_PER_TIME * game_framework.frame_time)
             if self.frame >=4:
                 self.action = self.idle_action
-                self.state = 'Idle'
+                self.state = 'Walk'
                 self.frame = 0
                 self.current_time = get_time()
         elif self.state == 'Die':
             self.action = 0
             if int(self.frame) <=8:
                 self.frame = self.frame + player.FRAMES_PER_ACTION/4 * player.ACTION_PER_TIME * game_framework.frame_time
-
-        if get_time() - self.current_time > self.attack_cooldown and self.state != 'Die':
-            if self.dir == 1:
-                monsteratk = attack.MonsterATKPlayer(self.x + 25, self.y, self.basic_atk_size_x, self.basic_atk_size_y)
-            elif self.dir == -1:
-                monsteratk = attack.MonsterATKPlayer(self.x - 25, self.y, self.basic_atk_size_x, self.basic_atk_size_y)
-            game_world.add_obj(monsteratk, 1)
-            game_world.add_collision_pair('monsterATK:player', monsteratk, None)
-            self.frame = 0
-            self.state = 'Basic_Attack'
-            self.current_time = get_time()
 
     def draw(self):
         super().draw()
@@ -132,7 +175,7 @@ class DustJumper(Monster):
             self.frame = (self.frame + player.FRAMES_PER_ACTION * player.ACTION_PER_TIME * game_framework.frame_time)
             if self.frame >=4:
                 self.action = self.idle_action
-                self.state = 'Idle'
+                self.state = 'Walk'
                 self.frame = 0
                 self.current_time = get_time()
         elif self.state == 'Die':
