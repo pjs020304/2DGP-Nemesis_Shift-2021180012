@@ -62,6 +62,7 @@ def init():
         game_world.add_obj(panda, 1)
         game_world.add_collision_pair('player:monster', None, panda)
         game_world.add_collision_pair('playerATK:monster', panda, None)
+        game_world.add_collision_pair('playerFarATK:monster', panda, None)
 
     dustjumpers = [
         monster.DustJumper(0, 12, 42, 91, 8, 900, 225, 150, 100, 1000 + 250, 1000 - 250),
@@ -71,6 +72,7 @@ def init():
         game_world.add_obj(dustjumper, 1)
         game_world.add_collision_pair('player:monster', None, dustjumper)
         game_world.add_collision_pair('playerATK:monster', dustjumper, None)
+        game_world.add_collision_pair('playerFarATK:monster', dustjumper, None)
 
 def update():
     game_world.update()

@@ -22,7 +22,38 @@ class PlayerATKMonster:
         if group == 'playerATK:monster' and other.state != 'Die':
             game_world.remove_object(self)
 
-
+class PlayerFarATKMonster:
+    def __init__(self, x, y, size_x, size_y):
+        self.x, self.y= x, y
+        self.size_x, self.size_y = size_x, size_y
+        self.current = get_time()
+        self.image = load_image('Resource\\Dusk Bomb.png')
+        self.frame=0
+    def draw(self):
+        self.image.clip_draw(int(self.frame) * 31, 0, 31, 38, self.x,
+                             self.y, self.size_x, self.size_y)
+        if play_mode.collider_trig:
+            draw_rectangle(*self.get_bb())
+    def update(self):
+        self.frame = (self.frame + player.FRAMES_PER_ACTION * player.ACTION_PER_TIME * game_framework.frame_time) % 16
+        if get_time() - self.current > 1.0:
+            game_world.remove_object(self)
+        if play_mode.player.dir ==1:
+            if play_mode.player.x >= 700:
+                self.x -= player.RUN_SPEED_PPS * game_framework.frame_time
+        elif play_mode.player.dir == -1:
+            if play_mode.player.x <= 300:
+                self.x += player.RUN_SPEED_PPS * game_framework.frame_time
+        pass
+    def get_bb(self):
+        return self.x - self.size_x//2, self.y - self.size_y//2, self.x + self.size_x//2, self.y + self.size_y//2
+    def handle_collision(self, group, other):
+        if group == 'playerFarATK:monster' and other.state != 'Die' and get_time() - self.current > 0.7:
+            game_world.remove_object(self)
+            other.currenthp -= 1
+            if other.currenthp <=0:
+                other.state = 'Die'
+                other.dir = 0
 
 class MonsterATKPlayer:
     def __init__(self, x, y, size_x, size_y):
@@ -64,6 +95,12 @@ class MonsterFarATKPlayer:
         self.frame = (self.frame + player.FRAMES_PER_ACTION * player.ACTION_PER_TIME * game_framework.frame_time) % 16
         if get_time() - self.current > 1.0:
             game_world.remove_object(self)
+        if play_mode.player.dir ==1:
+            if play_mode.player.x >= 700:
+                self.x += player.RUN_SPEED_PPS * game_framework.frame_time
+        elif play_mode.player.dir == -1:
+            if play_mode.player.x <= 300:
+                self.x += player.RUN_SPEED_PPS * game_framework.frame_time
         pass
     def get_bb(self):
         return self.x - self.size_x//2, self.y - self.size_y//2, self.x + self.size_x//2, self.y + self.size_y//2
