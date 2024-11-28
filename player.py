@@ -181,10 +181,14 @@ class Player:
                 self.frame = 0
                 self.action = self.basic_atk_action
                 self.state = 'Basic_Attack'
-                if self.x < self.mx:
-                    playeratk = attack.PlayerATKMonster(self.x + 25, self.y, self.basic_atk_size_x, self.basic_atk_size_y)
+                if (self.png != 'Resource\\Dust Jumper Sprite Sheet 42x91.png'):
+                    if self.x < self.mx:
+                        playeratk = attack.PlayerATKMonster(self.x + 25, self.y, self.basic_atk_size_x, self.basic_atk_size_y)
+                    else:
+                        playeratk = attack.PlayerATKMonster(self.x - 25, self.y,self.basic_atk_size_x, self.basic_atk_size_y)
                 else:
-                    playeratk = attack.PlayerATKMonster(self.x - 25, self.y,self.basic_atk_size_x, self.basic_atk_size_y)
+                    playeratk = attack.PlayerATKMonster(self.mx, self.my, self.basic_atk_size_x,
+                                                            self.basic_atk_size_y)
                 game_world.add_obj(playeratk, 1)
                 game_world.add_collision_pair('playerATK:monster', None, playeratk)
             if event.button == SDL_BUTTON_RIGHT and self.state == 'Idle'and get_time()- self.skill_count > 5:
