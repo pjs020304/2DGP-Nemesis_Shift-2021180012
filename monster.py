@@ -34,13 +34,13 @@ class Monster:
             if self.state == 'Walk':
                 self.frame = (self.frame + player.FRAMES_PER_ACTION * player.ACTION_PER_TIME * game_framework.frame_time) % self.frame_count
         if play_mode.player.dir == 1:
-            if play_mode.player.x >= 700:
+            if play_mode.player.x >= 700 and  -1500<self.x :
                 self.x -= player.RUN_SPEED_PPS * game_framework.frame_time
                 self.max_x-=player.RUN_SPEED_PPS * game_framework.frame_time
                 self.min_x-=player.RUN_SPEED_PPS * game_framework.frame_time
                 self.tx -=player.RUN_SPEED_PPS * game_framework.frame_time
         elif play_mode.player.dir == -1:
-            if play_mode.player.x <= 300:
+            if play_mode.player.x <= 300and  1500>self.x:
                 self.x += player.RUN_SPEED_PPS * game_framework.frame_time
                 self.max_x+=player.RUN_SPEED_PPS * game_framework.frame_time
                 self.min_x+=player.RUN_SPEED_PPS * game_framework.frame_time

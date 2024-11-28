@@ -18,7 +18,7 @@ ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
 FRAMES_PER_ACTION = 8
 
 class CharInfo:
-    def __init__(self, width, height, size_x, size_y, run_action, basic_atk_action, fall_action, idle_action, png, basic_atk_size_x, basic_atk_size_y, skill_atk_action, skill_atk_size_x, skill_atk_size_y, maxhp):
+    def __init__(self, width=0, height=0, size_x=0, size_y=0, run_action=0, basic_atk_action=0, fall_action=0, idle_action=0, png='Resource\\UI_quit.png', basic_atk_size_x=0, basic_atk_size_y=0, skill_atk_action=0, skill_atk_size_x=0, skill_atk_size_y=0, maxhp=0):
         self.size_x, self.size_y = size_x, size_y
         self.png = png
         self.image = load_image(png)
@@ -49,8 +49,8 @@ class Player:
 
         # 변신할 때 바껴야 할 것들
         self.hp = 3
-        self.charinfoexist = [False, False, False]
-        self.charinfo = []
+        self.charinfoexist = [False, False]
+        self.charinfo = [CharInfo(), CharInfo()]
         self.size_x, self.size_y = 120, 120
         self.image = load_image(self.png)
         self.width, self.height = 64, 65
@@ -163,6 +163,30 @@ class Player:
                 self.fall_action, self.charinfo[0].fall_action = self.charinfo[0].fall_action, self.fall_action
                 self.idle_action, self.charinfo[0].idle_action = self.charinfo[0].idle_action, self.idle_action
                 self.hp, self.charinfo[0].hp = self.charinfo[0].hp, self.hp
+            if event.key == SDLK_2 and self.charinfoexist[1]:
+                self.size_x, self.charinfo[1].size_x = self.charinfo[1].size_x, self.size_x
+                self.size_y, self.charinfo[1].size_y = self.charinfo[1].size_y, self.size_y
+                self.png, self.charinfo[1].png = self.charinfo[1].png, self.png
+                self.image = load_image(self.png)
+                self.charinfo[1].image = load_image(self.charinfo[1].png)
+                self.width, self.charinfo[1].width = self.charinfo[1].width, self.width
+                self.height, self.charinfo[1].height = self.charinfo[1].height, self.height
+                self.basic_atk_size_x, self.charinfo[1].basic_atk_size_x = self.charinfo[
+                    1].basic_atk_size_x, self.basic_atk_size_x
+                self.basic_atk_size_y, self.charinfo[1].basic_atk_size_y = self.charinfo[
+                    1].basic_atk_size_y, self.basic_atk_size_y
+                self.skill_atk_size_x, self.charinfo[1].skill_atk_size_x = self.charinfo[
+                    1].skill_atk_size_x, self.skill_atk_size_x
+                self.skill_atk_size_y, self.charinfo[1].skill_atk_size_y = self.charinfo[
+                    1].skill_atk_size_y, self.skill_atk_size_y
+                self.run_action, self.charinfo[1].run_action = self.charinfo[1].run_action, self.run_action
+                self.basic_atk_action, self.charinfo[1].basic_atk_action = self.charinfo[
+                    1].basic_atk_action, self.basic_atk_action
+                self.skill_atk_action, self.charinfo[1].skill_atk_action = self.charinfo[
+                    1].skill_atk_action, self.skill_atk_action
+                self.fall_action, self.charinfo[1].fall_action = self.charinfo[1].fall_action, self.fall_action
+                self.idle_action, self.charinfo[1].idle_action = self.charinfo[1].idle_action, self.idle_action
+                self.hp, self.charinfo[1].hp = self.charinfo[1].hp, self.hp
 
             if event.key == SDLK_SPACE and self.fall == False:
                 self.fall = True
@@ -217,8 +241,11 @@ class Player:
         if play_mode.collider_trig:
             draw_rectangle(*self.get_bb())
         self.panel.draw(100, 600, 180, 180)
+        self.panel.draw(280, 600, 180, 180)
         if self.charinfoexist[0]:
             self.charinfo[0].image.clip_draw(0* self.charinfo[0].width, 0 * self.charinfo[0].height, self.charinfo[0].width, self.charinfo[0].height, 100, 600, 180, 180)
+        if self.charinfoexist[1]:
+            self.charinfo[1].image.clip_draw(0* self.charinfo[1].width, 0 * self.charinfo[1].height, self.charinfo[1].width, self.charinfo[1].height, 280, 600, 180, 180)
         if self.corpse:
             self.font.draw(self.x, self.y + self.size_y // 4, '[E]', (255, 255, 0))
         if get_time()- self.skill_count > 5:
@@ -243,9 +270,36 @@ class Player:
         if group == 'player:monster' and other.state == 'Die':
             self.corpse = True
             if self.cliked_e:
-                self.charinfoexist[0] = True
-                self.charinfo.append(CharInfo(other.width, other.height, other.size_x, other.size_y, other.run_action, other.basic_atk_action, other.fall_action,other.idle_action, other.png, other.basic_atk_size_x, other.basic_atk_size_y, other.skill_atk_action, other.skill_atk_size_x, other.skill_atk_size_y, other.maxhp))
-                game_world.remove_object(other)
+                if  not self.charinfoexist[0]:
+                    self.charinfoexist[0] = True
+                    self.charinfo[0] = CharInfo(other.width, other.height, other.size_x, other.size_y, other.run_action, other.basic_atk_action, other.fall_action,other.idle_action, other.png, other.basic_atk_size_x, other.basic_atk_size_y, other.skill_atk_action, other.skill_atk_size_x, other.skill_atk_size_y, other.maxhp)
+                    game_world.remove_object(other)
+
+                elif not self.charinfoexist[1]:
+                    self.charinfoexist[1] = True
+                    self.charinfo[1] = CharInfo(other.width, other.height, other.size_x, other.size_y, other.run_action, other.basic_atk_action, other.fall_action,other.idle_action, other.png, other.basic_atk_size_x, other.basic_atk_size_y, other.skill_atk_action, other.skill_atk_size_x, other.skill_atk_size_y, other.maxhp)
+                    game_world.remove_object(other)
+                else:
+                    temp = CharInfo(other.width, other.height, other.size_x, other.size_y, other.run_action, other.basic_atk_action, other.fall_action,other.idle_action, other.png, other.basic_atk_size_x, other.basic_atk_size_y, other.skill_atk_action, other.skill_atk_size_x, other.skill_atk_size_y, other.maxhp)
+                    game_world.remove_object(other)
+                    self.size_x, temp.size_x = temp.size_x, self.size_x
+                    self.size_y, temp.size_y = temp.size_y, self.size_y
+                    self.png, temp.png = temp.png, self.png
+                    self.image = load_image(self.png)
+                    temp.image = load_image(temp.png)
+                    self.width, temp.width = temp.width, self.width
+                    self.height, temp.height = temp.height, self.height
+                    self.basic_atk_size_x, temp.basic_atk_size_x = temp.basic_atk_size_x, self.basic_atk_size_x
+                    self.basic_atk_size_y, temp.basic_atk_size_y = temp.basic_atk_size_y, self.basic_atk_size_y
+                    self.skill_atk_size_x, temp.skill_atk_size_x = temp.skill_atk_size_x, self.skill_atk_size_x
+                    self.skill_atk_size_y, temp.skill_atk_size_y = temp.skill_atk_size_y, self.skill_atk_size_y
+                    self.run_action, temp.run_action = temp.run_action, self.run_action
+                    self.basic_atk_action, temp.basic_atk_action = temp.basic_atk_action, self.basic_atk_action
+                    self.skill_atk_action, temp.skill_atk_action = temp.skill_atk_action, self.skill_atk_action
+                    self.fall_action, temp.fall_action = temp.fall_action, self.fall_action
+                    self.idle_action, temp.idle_action = temp.idle_action, self.idle_action
+                    self.hp, temp.hp = temp.hp, self.hp
+
         else:
             self.corpse = False
         if group == 'monsterATK:player':

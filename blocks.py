@@ -15,10 +15,10 @@ class Block:
 
     def update(self):
         if play_mode.player.dir == 1:
-            if play_mode.player.x >= 700:
+            if play_mode.player.x >= 700 and -1500<self.x:
                 self.x -= player.RUN_SPEED_PPS * game_framework.frame_time
         elif play_mode.player.dir == -1:
-            if play_mode.player.x <= 300:
+            if play_mode.player.x <= 300 and 1500>self.x :
                 self.x += player.RUN_SPEED_PPS * game_framework.frame_time
 
         pass
