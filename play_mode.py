@@ -42,6 +42,7 @@ def init():
     game_world.add_collision_pair('player:block', player, None)
     game_world.add_collision_pair('player:monster', player, None)
     game_world.add_collision_pair('monsterATK:player', None, player)
+    game_world.add_collision_pair('monsterFarATK:player', None, player)
 
     blocks = [
         bridge.Block(30, 176, 82, 22, 600, 175+100, 300, 100),

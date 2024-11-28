@@ -50,20 +50,25 @@ class MonsterFarATKPlayer:
         self.current = get_time()
         self.image = load_image('Resource\\Dusk Bomb.png')
         self.frame=0
+        self.font = load_font('Resource\\ENCR10B.TTF', 20)
     def draw(self):
         self.image.clip_draw(int(self.frame) * 31, 0, 31, 38, self.x,
                              self.y, self.size_x, self.size_y)
         if play_mode.collider_trig:
             draw_rectangle(*self.get_bb())
+        if 0.7-(get_time() - self.current)>0:
+            self.font.draw(self.x, self.y + self.size_y // 4, f'{format(0.8-(get_time() - self.current), ".2f")}', (255, 255, 0))
+        else:
+            self.font.draw(self.x, self.y + self.size_y // 4, '!!!Danger!!!', (255, 0, 0))
     def update(self):
-        self.frame = (self.frame + player.FRAMES_PER_ACTION * player.ACTION_PER_TIME * game_framework.frame_time) % 8
-        if get_time() - self.current > 0.5:
+        self.frame = (self.frame + player.FRAMES_PER_ACTION * player.ACTION_PER_TIME * game_framework.frame_time) % 16
+        if get_time() - self.current > 1.0:
             game_world.remove_object(self)
         pass
     def get_bb(self):
         return self.x - self.size_x//2, self.y - self.size_y//2, self.x + self.size_x//2, self.y + self.size_y//2
     def handle_collision(self, group, other):
-        if group == 'monsterFarATK:player' and get_time() - self.current > 0.2:
+        if group == 'monsterFarATK:player' and get_time() - self.current > 0.7:
             game_world.remove_object(self)
             other.hp -= 1
             other.y += 30

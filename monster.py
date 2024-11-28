@@ -96,9 +96,14 @@ class Monster:
             self.move_slightly_to(self.tx, self.ty)
             if get_time() - self.current_time > self.attack_cooldown and self.state != 'Die':
                 self.state = 'Basic_Attack'
-                monsteratk = attack.MonsterFarATKPlayer(play_mode.player.x + randint(-10, 10), play_mode.player.y+ randint(-10, 10), self.basic_atk_size_x, self.basic_atk_size_y)
+                if math.cos(self.dir) > 0:
+                    monsteratk = attack.MonsterATKPlayer(self.x - 25, self.y, self.basic_atk_size_x,
+                                                         self.basic_atk_size_y)
+                else:
+                    monsteratk = attack.MonsterATKPlayer(self.x + 25, self.y, self.basic_atk_size_x,
+                                                         self.basic_atk_size_y)
                 game_world.add_obj(monsteratk, 1)
-                game_world.add_collision_pair('monsterFarATK:player', monsteratk, None)
+                game_world.add_collision_pair('monsterATK:player', monsteratk, None)
                 self.frame = 0
                 self.state = 'Basic_Attack'
                 self.current_time = get_time()
@@ -179,7 +184,7 @@ class DustJumper(Monster):
         self.run_action = 4
         self.basic_atk_action= 7
         self.skill_atk_action = -1
-        self.basic_atk_size_x, self.basic_atk_size_y = 200, 50
+        self.basic_atk_size_x, self.basic_atk_size_y = 100, 50
         self.skill_atk_size_x, self.skill_atk_size_y = -1, -1
         self.fall_action = 6
         self.idle_action = 8
@@ -221,12 +226,9 @@ class DustJumper(Monster):
             self.move_slightly_to(self.tx, self.ty)
             if get_time() - self.current_time > self.attack_cooldown and self.state != 'Die':
                 self.state = 'Basic_Attack'
-                if math.cos(self.dir) > 0:
-                    monsteratk = attack.MonsterATKPlayer(self.x - 25, self.y, self.basic_atk_size_x, self.basic_atk_size_y)
-                else:
-                    monsteratk = attack.MonsterATKPlayer(self.x + 25, self.y, self.basic_atk_size_x, self.basic_atk_size_y)
+                monsteratk = attack.MonsterFarATKPlayer(play_mode.player.x + randint(-20, 20), play_mode.player.y + randint(-20, 20), self.basic_atk_size_x, self.basic_atk_size_y)
                 game_world.add_obj(monsteratk, 1)
-                game_world.add_collision_pair('monsterATK:player', monsteratk, None)
+                game_world.add_collision_pair('monsterFarATK:player', monsteratk, None)
                 self.frame = 0
                 self.state = 'Basic_Attack'
                 self.current_time = get_time()
