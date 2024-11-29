@@ -164,7 +164,7 @@ class Player:
             elif self.charinfoexist[1]:
                 self.change_char(1)
             else:
-                game_framework.change_mode(death_mode)
+                play_mode.game_over = True
                 pass
 
 

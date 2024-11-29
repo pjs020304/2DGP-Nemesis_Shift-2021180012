@@ -7,6 +7,7 @@ import blocks as bridge
 import background
 import monster
 import start_mode
+import death_mode
 
 def handle_events():
     global running
@@ -30,6 +31,9 @@ def init():
     global collider_trig
     global pandas
     global dustjumpers
+    global game_over
+
+    game_over = False
 
     collider_trig = False
     gravity = 1
@@ -75,6 +79,8 @@ def init():
         game_world.add_collision_pair('playerFarATK:monster', dustjumper, None)
 
 def update():
+    if game_over:
+        game_framework.change_mode(death_mode)
     game_world.update()
     game_world.handle_collisions()
 def draw():
@@ -99,6 +105,13 @@ def finish():
     for panda in pandas:
         game_world.remove_object(panda)
     del pandas
+    global dustjumpers
+    for dustjumper in dustjumpers:
+        game_world.remove_object(dustjumper)
+    del dustjumpers
+    game_world.clear()
+
+
 DK_width, DK_height = 1000, 700
 
 def pause():

@@ -8,7 +8,7 @@ import start_mode
 
 def init():
     global image
-    image = load_image('Resource\\game-over-glitch-seeklogo.png')
+    image = load_image('Resource\\game_over_press_R_to_restart.png')
 
 def finish():
     global image
@@ -22,8 +22,10 @@ def handle_events():
         elif event.type == SDL_KEYDOWN and event.key == SDLK_ESCAPE:
             game_framework.quit()
         elif event.type == SDL_KEYDOWN and event.key == SDLK_r:
+            play_mode.game_over = False
             game_framework.change_mode(start_mode)
         elif (event.type, event.key) == (SDL_KEYDOWN, SDLK_SPACE):
+            play_mode.game_over = False
             game_framework.change_mode(play_mode)
 
 def draw():
