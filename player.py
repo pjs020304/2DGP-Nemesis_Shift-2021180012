@@ -5,6 +5,7 @@ import play_mode
 import game_framework
 import attack
 import game_world
+import death_mode
 
 # 움직임 속도
 PIXEL_PER_METER = (10.0 / 0.3) # 10 pixel 30 cm
@@ -68,6 +69,31 @@ class Player:
         self.min_x, self.max_x = 0, 1000
         self.mx, self.my = 0,0
 
+    def change_char(self, charnum):
+            self.size_x, self.charinfo[charnum].size_x = self.charinfo[charnum].size_x, self.size_x
+            self.size_y, self.charinfo[charnum].size_y = self.charinfo[charnum].size_y, self.size_y
+            self.png, self.charinfo[charnum].png = self.charinfo[charnum].png, self.png
+            self.image = load_image(self.png)
+            self.charinfo[charnum].image = load_image(self.charinfo[charnum].png)
+            self.width, self.charinfo[charnum].width = self.charinfo[charnum].width, self.width
+            self.height, self.charinfo[charnum].height = self.charinfo[charnum].height, self.height
+            self.basic_atk_size_x, self.charinfo[charnum].basic_atk_size_x = self.charinfo[
+                charnum].basic_atk_size_x, self.basic_atk_size_x
+            self.basic_atk_size_y, self.charinfo[charnum].basic_atk_size_y = self.charinfo[
+                charnum].basic_atk_size_y, self.basic_atk_size_y
+            self.skill_atk_size_x, self.charinfo[charnum].skill_atk_size_x = self.charinfo[
+                charnum].skill_atk_size_x, self.skill_atk_size_x
+            self.skill_atk_size_y, self.charinfo[charnum].skill_atk_size_y = self.charinfo[
+                charnum].skill_atk_size_y, self.skill_atk_size_y
+            self.run_action, self.charinfo[charnum].run_action = self.charinfo[charnum].run_action, self.run_action
+            self.basic_atk_action, self.charinfo[charnum].basic_atk_action = self.charinfo[
+                charnum].basic_atk_action, self.basic_atk_action
+            self.skill_atk_action, self.charinfo[charnum].skill_atk_action = self.charinfo[
+                charnum].skill_atk_action, self.skill_atk_action
+            self.fall_action, self.charinfo[charnum].fall_action = self.charinfo[charnum].fall_action, self.fall_action
+            self.idle_action, self.charinfo[charnum].idle_action = self.charinfo[charnum].idle_action, self.idle_action
+            self.hp, self.charinfo[charnum].hp = self.charinfo[charnum].hp, self.hp
+
     def update(self):
 
         if self.dir == -1:
@@ -129,6 +155,18 @@ class Player:
             self.fall = True
             self.min_x, self.max_x = 0, 1000
 
+        if self.charinfo[0].hp<=0:self.charinfoexist[0] = False
+        if self.charinfo[1].hp<=0:self.charinfoexist[1] = False
+
+        if self.hp <=0:
+            if self.charinfoexist[0]:
+                self.change_char(0)
+            elif self.charinfoexist[1]:
+                self.change_char(1)
+            else:
+                game_framework.change_mode(death_mode)
+                pass
+
 
 
     def handle_event(self, event):
@@ -140,53 +178,9 @@ class Player:
             if event.key == SDLK_e:
                 self.cliked_e = True
             if event.key == SDLK_1 and self.charinfoexist[0]:
-                self.size_x, self.charinfo[0].size_x = self.charinfo[0].size_x, self.size_x
-                self.size_y, self.charinfo[0].size_y = self.charinfo[0].size_y, self.size_y
-                self.png, self.charinfo[0].png = self.charinfo[0].png, self.png
-                self.image = load_image(self.png)
-                self.charinfo[0].image = load_image(self.charinfo[0].png)
-                self.width, self.charinfo[0].width = self.charinfo[0].width,self.width
-                self.height, self.charinfo[0].height =  self.charinfo[0].height,self.height
-                self.basic_atk_size_x, self.charinfo[0].basic_atk_size_x = self.charinfo[
-                    0].basic_atk_size_x, self.basic_atk_size_x
-                self.basic_atk_size_y, self.charinfo[0].basic_atk_size_y = self.charinfo[
-                    0].basic_atk_size_y, self.basic_atk_size_y
-                self.skill_atk_size_x, self.charinfo[0].skill_atk_size_x = self.charinfo[
-                    0].skill_atk_size_x, self.skill_atk_size_x
-                self.skill_atk_size_y, self.charinfo[0].skill_atk_size_y = self.charinfo[
-                    0].skill_atk_size_y, self.skill_atk_size_y
-                self.run_action, self.charinfo[0].run_action = self.charinfo[0].run_action, self.run_action
-                self.basic_atk_action, self.charinfo[0].basic_atk_action = self.charinfo[
-                    0].basic_atk_action, self.basic_atk_action
-                self.skill_atk_action, self.charinfo[0].skill_atk_action = self.charinfo[
-                    0].skill_atk_action, self.skill_atk_action
-                self.fall_action, self.charinfo[0].fall_action = self.charinfo[0].fall_action, self.fall_action
-                self.idle_action, self.charinfo[0].idle_action = self.charinfo[0].idle_action, self.idle_action
-                self.hp, self.charinfo[0].hp = self.charinfo[0].hp, self.hp
+                self.change_char(0)
             if event.key == SDLK_2 and self.charinfoexist[1]:
-                self.size_x, self.charinfo[1].size_x = self.charinfo[1].size_x, self.size_x
-                self.size_y, self.charinfo[1].size_y = self.charinfo[1].size_y, self.size_y
-                self.png, self.charinfo[1].png = self.charinfo[1].png, self.png
-                self.image = load_image(self.png)
-                self.charinfo[1].image = load_image(self.charinfo[1].png)
-                self.width, self.charinfo[1].width = self.charinfo[1].width, self.width
-                self.height, self.charinfo[1].height = self.charinfo[1].height, self.height
-                self.basic_atk_size_x, self.charinfo[1].basic_atk_size_x = self.charinfo[
-                    1].basic_atk_size_x, self.basic_atk_size_x
-                self.basic_atk_size_y, self.charinfo[1].basic_atk_size_y = self.charinfo[
-                    1].basic_atk_size_y, self.basic_atk_size_y
-                self.skill_atk_size_x, self.charinfo[1].skill_atk_size_x = self.charinfo[
-                    1].skill_atk_size_x, self.skill_atk_size_x
-                self.skill_atk_size_y, self.charinfo[1].skill_atk_size_y = self.charinfo[
-                    1].skill_atk_size_y, self.skill_atk_size_y
-                self.run_action, self.charinfo[1].run_action = self.charinfo[1].run_action, self.run_action
-                self.basic_atk_action, self.charinfo[1].basic_atk_action = self.charinfo[
-                    1].basic_atk_action, self.basic_atk_action
-                self.skill_atk_action, self.charinfo[1].skill_atk_action = self.charinfo[
-                    1].skill_atk_action, self.skill_atk_action
-                self.fall_action, self.charinfo[1].fall_action = self.charinfo[1].fall_action, self.fall_action
-                self.idle_action, self.charinfo[1].idle_action = self.charinfo[1].idle_action, self.idle_action
-                self.hp, self.charinfo[1].hp = self.charinfo[1].hp, self.hp
+                self.change_char(1)
 
             if event.key == SDLK_SPACE and self.fall == False:
                 self.fall = True
@@ -307,3 +301,5 @@ class Player:
             self.y +=20
             self.vertical += 5
             self.fall = True
+
+
