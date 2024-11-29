@@ -97,10 +97,11 @@ class MonsterFarATKPlayer:
             game_world.remove_object(self)
         if play_mode.player.dir ==1:
             if play_mode.player.x >= 700:
-                self.x += player.RUN_SPEED_PPS * game_framework.frame_time
+                self.x -= player.RUN_SPEED_PPS * game_framework.frame_time
         elif play_mode.player.dir == -1:
             if play_mode.player.x <= 300:
                 self.x += player.RUN_SPEED_PPS * game_framework.frame_time
+
         pass
     def get_bb(self):
         return self.x - self.size_x//2, self.y - self.size_y//2, self.x + self.size_x//2, self.y + self.size_y//2
