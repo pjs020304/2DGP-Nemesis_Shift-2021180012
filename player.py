@@ -252,7 +252,7 @@ class Player:
 
 
     def get_bb(self):
-        return self.x-self.size_x//6, self.y-self.size_y//4, self.x+self.size_x//6, self.y+self.size_y//4
+        return self.x-self.size_x//6, self.y-self.size_y//6, self.x+self.size_x//6, self.y+self.size_y//6
 
     def handle_collision(self, group, other):
         if group == 'player:block' and self.vertical < 0:

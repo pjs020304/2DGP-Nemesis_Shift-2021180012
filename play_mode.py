@@ -32,6 +32,7 @@ def init():
     global pandas
     global dustjumpers
     global game_over
+    global backgrounds
 
     game_over = False
 
@@ -50,7 +51,15 @@ def init():
 
     blocks = [
         bridge.Block(30, 176, 82, 22, 600, 175+100, 300, 100),
-        bridge.Block(30, 176, 82, 22, 1000, 175, 500, 100)
+        bridge.Block(30, 176, 82, 22, 1000, 175, 500, 100),
+        bridge.Block(30, 176, 82, 22, 1300, 250, 100, 100),
+        bridge.Block(30, 176, 82, 22, 1700, 350, 700, 100),
+        bridge.Block(30, 176, 82, 22, 2150, 350, 80, 100),
+        bridge.Block(30, 176, 82, 22, 2300, 340, 70, 100),
+        bridge.Block(30, 176, 82, 22, 2450, 380, 90, 100),
+        bridge.Block(30, 176, 82, 22, 2000, 260, 400, 100),
+        bridge.Block(30, 176, 82, 22, 2610, 250, 80, 100),
+
     ]
     for block in blocks:
         game_world.add_obj(block, 0)
@@ -67,10 +76,9 @@ def init():
         game_world.add_collision_pair('player:monster', None, panda)
         game_world.add_collision_pair('playerATK:monster', panda, None)
         game_world.add_collision_pair('playerFarATK:monster', panda, None)
-
+    2000, 240, 400, 100
     dustjumpers = [
-        monster.DustJumper(0, 12, 42, 91, 8, 900, 225, 150, 100, 1000 + 250, 1000 - 250),
-        monster.DustJumper(0, 12, 42, 91, 8, 550, 275 + 50, 150, 100, 600 + 150, 600 - 150)
+        monster.DustJumper(0, 12, 42, 91, 8, 2000, 300, 150, 100, 2000 + 200, 2000 - 200)
     ]
     for dustjumper in dustjumpers:
         game_world.add_obj(dustjumper, 1)
