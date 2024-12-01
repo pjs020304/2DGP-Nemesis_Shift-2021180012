@@ -7,6 +7,7 @@ import attack
 import game_world
 import death_mode
 
+
 # 움직임 속도
 PIXEL_PER_METER = (10.0 / 0.3) # 10 pixel 30 cm
 RUN_SPEED_KMPH = 20.0 # Km / Hour
@@ -47,6 +48,7 @@ class Player:
         self.png = 'Resource\\Sci-fi hero 64x65.png'
         self.skill_count = get_time()
         self.hp_png = load_image('Resource\\health_bar.png')
+        self.near_portal = False
 
         # 변신할 때 바껴야 할 것들
         self.hp = 3
@@ -242,12 +244,17 @@ class Player:
             self.charinfo[1].image.clip_draw(0* self.charinfo[1].width, 0 * self.charinfo[1].height, self.charinfo[1].width, self.charinfo[1].height, 280, 600, 180, 180)
         if self.corpse:
             self.font.draw(self.x, self.y + self.size_y // 4, '[E]', (255, 255, 0))
+
         if get_time()- self.skill_count > 5:
             self.font.draw(self.x-50, self.y +self.size_y//4+ 25, 'Skill Ready', (0, 191, 255))
         else:
             self.font.draw(self.x-50, self.y +self.size_y//4+ 25, f'(Cooldown: {5-get_time()+self.skill_count:.2f})', (0, 191, 255))
         for i in range(self.hp):
             self.hp_png.draw(300 + i*100, 50, 100, 50)
+        if self.near_portal:
+            self.font.draw(self.x, self.y + self.size_y // 4, '[E]', (255, 255, 0))
+        self.near_portal = False
+
 
 
 
@@ -260,7 +267,7 @@ class Player:
             self.vertical = 0
             self.fall = False
             self.min_x, self.max_x = other.x - (other.size_x // 2), other.x + (other.size_x // 2)
-            pass
+
         if group == 'player:monster' and other.state == 'Die':
             self.corpse = True
             if self.cliked_e:
@@ -296,10 +303,24 @@ class Player:
 
         else:
             self.corpse = False
+        if group == 'player:portal':
+            self.near_portal = True
+            if self.cliked_e:
+                self.cliked_e = False
+                play_mode.game_change_1_2 = True
+
+
+
+
+
         if group == 'monsterATK:player':
             self.hp -=1
             self.y +=20
             self.vertical += 5
             self.fall = True
+
+
+
+
 
 

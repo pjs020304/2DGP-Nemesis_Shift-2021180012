@@ -8,7 +8,6 @@ import background
 import monster
 import start_mode
 import death_mode
-import play_mode2
 
 def handle_events():
     global running
@@ -33,12 +32,10 @@ def init():
     global pandas
     global dustjumpers
     global game_over
-    global game_change_1_2
     global backgrounds
     global portal
 
     game_over = False
-    game_change_1_2 = False
 
     collider_trig = False
     gravity = 1
@@ -46,18 +43,17 @@ def init():
     backgrounds = background.BackGround()
     game_world.add_obj(backgrounds,0)
 
-    portal = background.Portal(2680, 270)
-    game_world.add_obj(portal, 1)
+    portal = background.Portal(2710, 250)
+    game_world.add_obj(portal,1)
     game_world.add_collision_pair('player:portal', None, portal)
 
     player = character.Player()
     game_world.add_obj(player,1)
-    game_world.add_collision_pair('player:portal', player, None)
     game_world.add_collision_pair('player:block', player, None)
     game_world.add_collision_pair('player:monster', player, None)
     game_world.add_collision_pair('monsterATK:player', None, player)
     game_world.add_collision_pair('monsterFarATK:player', None, player)
-
+    game_world.add_collision_pair('player:portal', player, None)
 
 
     blocks = [
@@ -87,7 +83,7 @@ def init():
         game_world.add_collision_pair('player:monster', None, panda)
         game_world.add_collision_pair('playerATK:monster', panda, None)
         game_world.add_collision_pair('playerFarATK:monster', panda, None)
-
+    2000, 240, 400, 100
     dustjumpers = [
         monster.DustJumper(0, 12, 42, 91, 8, 2000, 300, 150, 100, 2000 + 200, 2000 - 200)
     ]
@@ -97,13 +93,9 @@ def init():
         game_world.add_collision_pair('playerATK:monster', dustjumper, None)
         game_world.add_collision_pair('playerFarATK:monster', dustjumper, None)
 
-
-
 def update():
     if game_over:
         game_framework.change_mode(death_mode)
-    if game_change_1_2:
-        game_framework.change_mode(play_mode2)
     game_world.update()
     game_world.handle_collisions()
 def draw():

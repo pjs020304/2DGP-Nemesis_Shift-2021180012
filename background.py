@@ -30,3 +30,31 @@ class BackGround:
         self.layer4.draw(self.x[3], self.y[3],3500, 800)
         self.layer5.draw(self.x[4], self.y[4],5000, 800)
         pass
+
+class Portal:
+    def __init__(self, x, y):
+        self.image = load_image('Resource\\portal.png')
+        self.x, self.y = x,y
+        self.size_x, self.size_y = 100, 180
+        self.frame = 0
+    def update(self):
+        if play_mode.player.dir == 1:
+            if play_mode.player.x >= 700 and -1500 < play_mode.backgrounds.x[4]:
+                self.x -= player.RUN_SPEED_PPS * game_framework.frame_time
+        elif play_mode.player.dir == -1:
+            if play_mode.player.x <= 300 and 1500 > play_mode.backgrounds.x[4]:
+                self.x += player.RUN_SPEED_PPS * game_framework.frame_time
+
+        self.frame = (self.frame + player.FRAMES_PER_ACTION * player.ACTION_PER_TIME * game_framework.frame_time) % 4
+
+    def draw(self):
+        self.image.clip_draw(int(self.frame)*250, 0, 250, 592, self.x, self.y+80, self.size_x, self.size_y)
+        if play_mode.collider_trig:
+            draw_rectangle(*self.get_bb())
+
+    def get_bb(self):
+        return self.x - self.size_x , self.y, self.x + self.size_x , self.y + self.size_y
+
+    def handle_collision(self, group, other):
+        if group == 'player:portal':
+            pass
