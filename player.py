@@ -20,7 +20,7 @@ ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
 FRAMES_PER_ACTION = 8
 
 class CharInfo:
-    def __init__(self, width=0, height=0, size_x=0, size_y=0, run_action=0, basic_atk_action=0, fall_action=0, idle_action=0, png='Resource\\UI_quit.png', basic_atk_size_x=0, basic_atk_size_y=0, skill_atk_action=0, skill_atk_size_x=0, skill_atk_size_y=0, maxhp=0):
+    def __init__(self, width=0, height=0, size_x=0, size_y=0, run_action=0, basic_atk_action=0, fall_action=0, idle_action=0, png='Resource\\UI_quit.png', basic_atk_size_x=0, basic_atk_size_y=0, skill_atk_action=0, skill_atk_size_x=0, skill_atk_size_y=0, maxhp=0, basic_atk=0, skill=0):
         self.size_x, self.size_y = size_x, size_y
         self.png = png
         self.image = load_image(png)
@@ -34,6 +34,8 @@ class CharInfo:
         self.skill_atk_size_x = skill_atk_size_x
         self.skill_atk_size_y = skill_atk_size_y
         self.hp = maxhp
+        self.basic_atk = basic_atk
+        self.skill = skill
 class Player:
     def __init__(self):
         self.x, self.y = 400,90
@@ -49,6 +51,10 @@ class Player:
         self.skill_count = get_time()
         self.hp_png = load_image('Resource\\health_bar.png')
         self.near_portal = False
+        self.basic_atk = load_wav('Resource\\sword-sound-1.mp3')
+        self.basic_atk.set_volume(50)
+        self.skill = load_wav('Resource\\sword-sound-2.mp3')
+        self.skill.set_volume(50)
 
         # 변신할 때 바껴야 할 것들
         self.hp = 3
@@ -95,7 +101,8 @@ class Player:
             self.fall_action, self.charinfo[charnum].fall_action = self.charinfo[charnum].fall_action, self.fall_action
             self.idle_action, self.charinfo[charnum].idle_action = self.charinfo[charnum].idle_action, self.idle_action
             self.hp, self.charinfo[charnum].hp = self.charinfo[charnum].hp, self.hp
-
+            self.basic_atk, self.charinfo[charnum].basic_atk = self.charinfo[charnum].basic_atk, self.basic_atk
+            self.skill, self.charinfo[charnum].skill = self.charinfo[charnum].skill, self.skill
     def update(self):
 
         if self.dir == -1:
@@ -208,6 +215,9 @@ class Player:
                         playeratk = attack.PlayerATKMonster(self.x - 25, self.y,self.basic_atk_size_x, self.basic_atk_size_y)
                     game_world.add_obj(playeratk, 1)
                     game_world.add_collision_pair('playerATK:monster', None, playeratk)
+                    self.basic_atk.play()
+
+
                 else:
                     playeratk = attack.PlayerFarATKMonster(self.mx, self.my, self.basic_atk_size_x,
                                                             self.basic_atk_size_y)
@@ -223,6 +233,7 @@ class Player:
                     playeratk = attack.PlayerATKMonster(self.x - 25, self.y,self.skill_atk_size_x, self.skill_atk_size_y)
                 game_world.add_obj(playeratk, 1)
                 game_world.add_collision_pair('playerATK:monster', None, playeratk)
+                self.skill.play()
         elif event.type == SDL_MOUSEMOTION:
             self.mx, self.my = event.x , play_mode.DK_height - 1 - event.y
     def draw(self):
@@ -273,12 +284,12 @@ class Player:
             if self.cliked_e:
                 if  not self.charinfoexist[0]:
                     self.charinfoexist[0] = True
-                    self.charinfo[0] = CharInfo(other.width, other.height, other.size_x, other.size_y, other.run_action, other.basic_atk_action, other.fall_action,other.idle_action, other.png, other.basic_atk_size_x, other.basic_atk_size_y, other.skill_atk_action, other.skill_atk_size_x, other.skill_atk_size_y, other.maxhp)
+                    self.charinfo[0] = CharInfo(other.width, other.height, other.size_x, other.size_y, other.run_action, other.basic_atk_action, other.fall_action,other.idle_action, other.png, other.basic_atk_size_x, other.basic_atk_size_y, other.skill_atk_action, other.skill_atk_size_x, other.skill_atk_size_y, other.maxhp, other.basic_atk, other.skill)
                     game_world.remove_object(other)
 
                 elif not self.charinfoexist[1]:
                     self.charinfoexist[1] = True
-                    self.charinfo[1] = CharInfo(other.width, other.height, other.size_x, other.size_y, other.run_action, other.basic_atk_action, other.fall_action,other.idle_action, other.png, other.basic_atk_size_x, other.basic_atk_size_y, other.skill_atk_action, other.skill_atk_size_x, other.skill_atk_size_y, other.maxhp)
+                    self.charinfo[1] = CharInfo(other.width, other.height, other.size_x, other.size_y, other.run_action, other.basic_atk_action, other.fall_action,other.idle_action, other.png, other.basic_atk_size_x, other.basic_atk_size_y, other.skill_atk_action, other.skill_atk_size_x, other.skill_atk_size_y, other.maxhp, other.basic_atk, other.skill)
                     game_world.remove_object(other)
                 else:
                     temp = CharInfo(other.width, other.height, other.size_x, other.size_y, other.run_action, other.basic_atk_action, other.fall_action,other.idle_action, other.png, other.basic_atk_size_x, other.basic_atk_size_y, other.skill_atk_action, other.skill_atk_size_x, other.skill_atk_size_y, other.maxhp)
@@ -300,6 +311,8 @@ class Player:
                     self.fall_action, temp.fall_action = temp.fall_action, self.fall_action
                     self.idle_action, temp.idle_action = temp.idle_action, self.idle_action
                     self.hp, temp.hp = temp.hp, self.hp
+                    self.basic_atk, temp.basic_atk = temp.basic_atk, self.basic_atk
+                    self.skill, temp.skill = temp.skill, self.skill
 
         else:
             self.corpse = False
