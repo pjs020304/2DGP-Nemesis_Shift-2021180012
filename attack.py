@@ -82,6 +82,9 @@ class MonsterFarATKPlayer:
         self.image = load_image('Resource\\Dusk Bomb.png')
         self.frame=0
         self.font = load_font('Resource\\ENCR10B.TTF', 20)
+        self.basic_atk = load_wav('Resource\\lazer_atk.mp3')
+        self.basic_atk.set_volume(50)
+        self.basic_atk.play()
     def draw(self):
         self.image.clip_draw(int(self.frame) * 31, 0, 31, 38, self.x,
                              self.y, self.size_x, self.size_y)
@@ -92,8 +95,8 @@ class MonsterFarATKPlayer:
         else:
             self.font.draw(self.x, self.y + self.size_y // 4, '!!!Danger!!!', (255, 0, 0))
     def update(self):
-        self.frame = (self.frame + player.FRAMES_PER_ACTION * player.ACTION_PER_TIME * game_framework.frame_time) % 16
-        if get_time() - self.current > 1.0:
+        self.frame = (self.frame + player.FRAMES_PER_ACTION * player.ACTION_PER_TIME * game_framework.frame_time) % 22
+        if get_time() - self.current > 1.5:
             game_world.remove_object(self)
         if play_mode.player.dir ==1:
             if play_mode.player.x >= 700:
