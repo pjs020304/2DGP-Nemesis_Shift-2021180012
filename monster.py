@@ -148,10 +148,13 @@ class Panda(Monster):
         self.currenthp =5
         self.maxhp = 5
         self.png = 'Resource\\Tiny Panda Evil Version 103x33.png'
-        self.basic_atk = load_wav('Resource\\bear.mp3')
+        self.basic_atk = load_wav('Resource\\swing-weapon.mp3')
         self.basic_atk.set_volume(30)
         self.skill = load_wav('Resource\\panda_skill.mp3')
         self.skill.set_volume(30)
+        self.hit_sound = [load_wav('Resource\\bear.mp3'), load_wav('Resource\\bear_hit_2.mp3')]
+        self.hit_sound[0].set_volume(50)
+        self.hit_sound[1].set_volume(50)
     def update(self):
         self.action = 12
         super().update()
@@ -177,6 +180,7 @@ class Panda(Monster):
     def handle_collision(self, group, other):
         if group == 'playerATK:monster':
             self.currenthp -=1
+            self.hit_sound[randint(0, 1)].play()
             if self.currenthp <=0:
                 self.state = 'Die'
                 self.dir = 0
@@ -200,6 +204,9 @@ class DustJumper(Monster):
         self.basic_atk.set_volume(30)
         self.skill = load_wav('Resource\\panda_skill.mp3')
         self.skill.set_volume(50)
+        self.hit_sound = [load_wav('Resource\\hit_sound_1.mp3'), load_wav('Resource\\hit_sound_2.mp3')]
+        self.hit_sound[0].set_volume(50)
+        self.hit_sound[1].set_volume(50)
     def update(self):
         self.action = self.run_action
         super().update()
@@ -226,6 +233,7 @@ class DustJumper(Monster):
     def handle_collision(self, group, other):
         if group == 'playerATK:monster':
             self.currenthp -=1
+            self.hit_sound[randint(0, 1)].play()
             if self.currenthp <=0:
                 self.state = 'Die'
                 self.dir = 0.0
