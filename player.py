@@ -1,3 +1,5 @@
+from random import randint
+
 from pico2d import *
 from pygame.draw_py import clip_line
 
@@ -20,7 +22,7 @@ ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
 FRAMES_PER_ACTION = 8
 
 class CharInfo:
-    def __init__(self, width=0, height=0, size_x=0, size_y=0, run_action=0, basic_atk_action=0, fall_action=0, idle_action=0, png='Resource\\UI_quit.png', basic_atk_size_x=0, basic_atk_size_y=0, skill_atk_action=0, skill_atk_size_x=0, skill_atk_size_y=0, maxhp=0, basic_atk=0, skill=0):
+    def __init__(self, width=0, height=0, size_x=0, size_y=0, run_action=0, basic_atk_action=0, fall_action=0, idle_action=0, png='Resource\\UI_quit.png', basic_atk_size_x=0, basic_atk_size_y=0, skill_atk_action=0, skill_atk_size_x=0, skill_atk_size_y=0, maxhp=0, basic_atk=0, skill=0, hit_sound=0):
         self.size_x, self.size_y = size_x, size_y
         self.png = png
         self.image = load_image(png)
@@ -36,6 +38,8 @@ class CharInfo:
         self.hp = maxhp
         self.basic_atk = basic_atk
         self.skill = skill
+        self.hit_sound = hit_sound
+
 class Player:
     def __init__(self):
         self.x, self.y = 400,90
@@ -55,6 +59,12 @@ class Player:
         self.basic_atk.set_volume(50)
         self.skill = load_wav('Resource\\sword-sound-2.mp3')
         self.skill.set_volume(50)
+        self.skill = load_wav('Resource\\sword-sound-2.mp3')
+
+        self.hit_sound = [load_wav('Resource\\hit_sound_1.mp3'), load_wav('Resource\\hit_sound_2.mp3')]
+        self.hit_sound[0].set_volume(50)
+        self.hit_sound[1].set_volume(50)
+
 
         # 변신할 때 바껴야 할 것들
         self.hp = 3
@@ -103,6 +113,10 @@ class Player:
             self.hp, self.charinfo[charnum].hp = self.charinfo[charnum].hp, self.hp
             self.basic_atk, self.charinfo[charnum].basic_atk = self.charinfo[charnum].basic_atk, self.basic_atk
             self.skill, self.charinfo[charnum].skill = self.charinfo[charnum].skill, self.skill
+            self.hit_sound[0], self.charinfo[charnum].hit_sound[0] = self.charinfo[charnum].hit_sound[0], self.hit_sound[0]
+            self.hit_sound[1], self.charinfo[charnum].hit_sound[1] = self.charinfo[charnum].hit_sound[1], self.hit_sound[1]
+
+
     def update(self):
 
         if self.dir == -1:
@@ -270,11 +284,14 @@ class Player:
 
 
     def get_bb(self):
-        return self.x-self.size_x//6, self.y-self.size_y//6, self.x+self.size_x//6, self.y+self.size_y//6
+        return self.x-self.size_x//6, self.y-self.size_y//4, self.x+self.size_x//6, self.y+self.size_y//6
 
     def handle_collision(self, group, other):
         if group == 'player:block' and self.vertical < 0:
-            self.y = other.y + (other.size_y // 4) + 15  # 블록 위에 위치
+            if self.png == 'Resource\\Sci-fi hero 64x65.png':
+                self.y = other.y + (other.size_y // 4) + 15  # 블록 위에 위치
+            else:
+                self.y = other.y + (other.size_y // 2) + 15
             self.vertical = 0
             self.fall = False
             self.min_x, self.max_x = other.x - (other.size_x // 2), other.x + (other.size_x // 2)
@@ -284,15 +301,15 @@ class Player:
             if self.cliked_e:
                 if  not self.charinfoexist[0]:
                     self.charinfoexist[0] = True
-                    self.charinfo[0] = CharInfo(other.width, other.height, other.size_x, other.size_y, other.run_action, other.basic_atk_action, other.fall_action,other.idle_action, other.png, other.basic_atk_size_x, other.basic_atk_size_y, other.skill_atk_action, other.skill_atk_size_x, other.skill_atk_size_y, other.maxhp, other.basic_atk, other.skill)
+                    self.charinfo[0] = CharInfo(other.width, other.height, other.size_x, other.size_y, other.run_action, other.basic_atk_action, other.fall_action,other.idle_action, other.png, other.basic_atk_size_x, other.basic_atk_size_y, other.skill_atk_action, other.skill_atk_size_x, other.skill_atk_size_y, other.maxhp, other.basic_atk, other.skill,other.hit_sound)
                     game_world.remove_object(other)
 
                 elif not self.charinfoexist[1]:
                     self.charinfoexist[1] = True
-                    self.charinfo[1] = CharInfo(other.width, other.height, other.size_x, other.size_y, other.run_action, other.basic_atk_action, other.fall_action,other.idle_action, other.png, other.basic_atk_size_x, other.basic_atk_size_y, other.skill_atk_action, other.skill_atk_size_x, other.skill_atk_size_y, other.maxhp, other.basic_atk, other.skill)
+                    self.charinfo[1] = CharInfo(other.width, other.height, other.size_x, other.size_y, other.run_action, other.basic_atk_action, other.fall_action,other.idle_action, other.png, other.basic_atk_size_x, other.basic_atk_size_y, other.skill_atk_action, other.skill_atk_size_x, other.skill_atk_size_y, other.maxhp, other.basic_atk, other.skill,other.hit_sound)
                     game_world.remove_object(other)
                 else:
-                    temp = CharInfo(other.width, other.height, other.size_x, other.size_y, other.run_action, other.basic_atk_action, other.fall_action,other.idle_action, other.png, other.basic_atk_size_x, other.basic_atk_size_y, other.skill_atk_action, other.skill_atk_size_x, other.skill_atk_size_y, other.maxhp)
+                    temp = CharInfo(other.width, other.height, other.size_x, other.size_y, other.run_action, other.basic_atk_action, other.fall_action,other.idle_action, other.png, other.basic_atk_size_x, other.basic_atk_size_y, other.skill_atk_action, other.skill_atk_size_x, other.skill_atk_size_y, other.maxhp, other.hit_sound)
                     game_world.remove_object(other)
                     self.size_x, temp.size_x = temp.size_x, self.size_x
                     self.size_y, temp.size_y = temp.size_y, self.size_y
@@ -313,6 +330,8 @@ class Player:
                     self.hp, temp.hp = temp.hp, self.hp
                     self.basic_atk, temp.basic_atk = temp.basic_atk, self.basic_atk
                     self.skill, temp.skill = temp.skill, self.skill
+                    self.hit_sound[0], other.hit_sound[0] = other.hit_sound[0], self.hit_sound[0]
+                    self.hit_sound[1],other.hit_sound[1] = other.hit_sound[1], self.hit_sound[1]
 
         else:
             self.corpse = False
@@ -331,6 +350,7 @@ class Player:
             self.y +=20
             self.vertical += 5
             self.fall = True
+            self.hit_sound[randint(0,1)].play()
 
 
 
