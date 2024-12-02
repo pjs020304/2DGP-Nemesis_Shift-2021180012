@@ -58,7 +58,7 @@ class Monster:
             self.image.clip_composite_draw(int(self.frame) * self.width, self.action * self.height, self.width, self.height,0,'h', self.x, self.y, self.size_x, self.size_y)
         if play_mode.collider_trig:
             draw_rectangle(*self.get_bb())
-        draw_rectangle(self.tx-10, self.ty-10,self.tx+10, self.ty+10)
+            draw_rectangle(self.tx-10, self.ty-10,self.tx+10, self.ty+10)
         # self.font.draw(self.x, self.y + self.size_y // 4, f'{get_time() - self.current_time}', (255, 255, 0))
 
     def get_bb(self):
@@ -107,6 +107,7 @@ class Monster:
                 self.frame = 0
                 self.state = 'Basic_Attack'
                 self.current_time = get_time()
+                self.basic_atk.play()
                 return BehaviorTree.SUCCESS
             if self.distance_less_than(self.tx, self.ty, self.x, self.y, 0.5):
                 self.tx, self.ty= random.randint(int(self.min_x), int(self.max_x)), self.y
@@ -147,6 +148,10 @@ class Panda(Monster):
         self.currenthp =5
         self.maxhp = 5
         self.png = 'Resource\\Tiny Panda Evil Version 103x33.png'
+        self.basic_atk = load_wav('Resource\\bear.mp3')
+        self.basic_atk.set_volume(30)
+        self.skill = load_wav('Resource\\panda_skill.mp3')
+        self.skill.set_volume(30)
     def update(self):
         self.action = 12
         super().update()
@@ -191,6 +196,10 @@ class DustJumper(Monster):
         self.currenthp =2
         self.maxhp = 2
         self.png = 'Resource\\Dust Jumper Sprite Sheet 42x91.png'
+        self.basic_atk = load_wav('Resource\\bear.mp3')
+        self.basic_atk.set_volume(30)
+        self.skill = load_wav('Resource\\panda_skill.mp3')
+        self.skill.set_volume(50)
     def update(self):
         self.action = self.run_action
         super().update()
