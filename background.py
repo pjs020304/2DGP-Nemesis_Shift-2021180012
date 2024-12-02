@@ -12,6 +12,10 @@ class BackGround:
         self.x = [play_mode.DK_width // 2, play_mode.DK_width // 2, play_mode.DK_width // 2, play_mode.DK_width // 2, play_mode.DK_width // 2]
         self.y = [play_mode.DK_height//2,play_mode.DK_height//2,play_mode.DK_height//2,play_mode.DK_height//2,play_mode.DK_height//2]
         self.speed = 1
+        self.bgm = load_music('Resource//1Stage_Sound.mp3')
+        self.bgm.set_volume(20)
+        self.bgm.repeat_play()
+
     def update(self):
         if play_mode.player.dir == 1:
             if -1500<self.x[4] and play_mode.player.x >= 700 :
