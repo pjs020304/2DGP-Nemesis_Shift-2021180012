@@ -1,18 +1,25 @@
 from sdl2 import SDL_KEYDOWN, SDLK_ESCAPE, SDL_QUIT, SDLK_SPACE
 
 import game_framework
-from pico2d import get_time, clear_canvas, get_events, update_canvas, load_image
+from pico2d import get_time, clear_canvas, get_events, update_canvas, load_image, load_music
 
 import play_mode
 
 
 def init():
     global image
+    global sound
+
+    sound = load_music('Resource\\UI_Sound.mp3')
+    sound.set_volume(20)
+    sound.repeat_play()
     image = load_image('Resource\\Start_UI.jpg')
 
 def finish():
     global image
     del image
+    global sound
+    del sound
 
 def handle_events():
     events = get_events()
