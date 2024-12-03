@@ -25,7 +25,7 @@ class CharInfo:
     def __init__(self, width=0, height=0, size_x=0, size_y=0, run_action=0, basic_atk_action=0, fall_action=0, idle_action=0, png='Resource\\UI_quit.png', basic_atk_size_x=0, basic_atk_size_y=0, skill_atk_action=0, skill_atk_size_x=0, skill_atk_size_y=0, maxhp=0, basic_atk=0, skill=0, hit_sound=0):
         self.size_x, self.size_y = size_x, size_y
         self.png = png
-        self.image = load_image(png)
+        self.image = load_image(self.png)
         self.width, self.height = width, height
         self.basic_atk_size_x, self.basic_atk_size_y =  basic_atk_size_x, basic_atk_size_y
         self.run_action = run_action
@@ -60,10 +60,11 @@ class Player:
         self.skill = load_wav('Resource\\sword-sound-2.mp3')
         self.skill.set_volume(50)
         self.skill = load_wav('Resource\\sword-sound-2.mp3')
+        self.basic_cooldown = get_time()
 
         self.hit_sound = [load_wav('Resource\\hit_sound_1.mp3'), load_wav('Resource\\hit_sound_2.mp3')]
         self.hit_sound[0].set_volume(50)
-        self.hit_sound[1].set_volume(50)
+        self.hit_sound[1].set_volume(70)
 
 
         # 변신할 때 바껴야 할 것들
@@ -219,10 +220,10 @@ class Player:
                 self.cliked_e = False
         elif event.type == SDL_MOUSEBUTTONDOWN:
             if event.button == SDL_BUTTON_LEFT and self.state == 'Idle':
-                self.frame = 0
-                self.action = self.basic_atk_action
-                self.state = 'Basic_Attack'
-                if (self.png != 'Resource\\Dust Jumper Sprite Sheet 42x91.png'):
+                if self.png != 'Resource\\Dust Jumper Sprite Sheet 42x91.png' and get_time() - self.basic_cooldown > 0.5:
+                    self.frame = 0
+                    self.action = self.basic_atk_action
+                    self.state = 'Basic_Attack'
                     if self.x < self.mx:
                         playeratk = attack.PlayerATKMonster(self.x + 25, self.y, self.basic_atk_size_x, self.basic_atk_size_y)
                     else:
@@ -230,13 +231,18 @@ class Player:
                     game_world.add_obj(playeratk, 1)
                     game_world.add_collision_pair('playerATK:monster', None, playeratk)
                     self.basic_atk.play()
+                    self.basic_cooldown = get_time()
 
 
-                else:
-                    playeratk = attack.PlayerFarATKMonster(self.mx, self.my, self.basic_atk_size_x,
-                                                            self.basic_atk_size_y)
+
+                elif self.png == 'Resource\\Dust Jumper Sprite Sheet 42x91.png' and get_time() - self.basic_cooldown > 1.7:
+                    self.frame = 0
+                    self.action = self.basic_atk_action
+                    self.state = 'Basic_Attack'
+                    playeratk = attack.PlayerFarATKMonster(self.mx, self.my, self.basic_atk_size_x,self.basic_atk_size_y)
                     game_world.add_obj(playeratk, 1)
                     game_world.add_collision_pair('playerFarATK:monster', None, playeratk)
+                    self.basic_cooldown = get_time()
             if event.button == SDL_BUTTON_RIGHT and self.state == 'Idle'and get_time()- self.skill_count > 5 and self.png != 'Resource\\Dust Jumper Sprite Sheet 42x91.png':
                 self.frame = 0
                 self.action = self.skill_atk_action
