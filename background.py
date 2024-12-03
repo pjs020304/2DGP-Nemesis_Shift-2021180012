@@ -12,6 +12,7 @@ class BackGround:
         self.layer3 = load_image('Resource\\layer 3.png')
         self.layer4 = load_image('Resource\\layer 4.png')
         self.layer5 = load_image('Resource\\layer 5.png')
+        self.floor = load_image('Resource\\DARK Edition Tileset No background.png')
         self.x = [play_mode.DK_width // 2, play_mode.DK_width // 2, play_mode.DK_width // 2, play_mode.DK_width // 2, play_mode.DK_width // 2]
         self.y = [play_mode.DK_height//2,play_mode.DK_height//2,play_mode.DK_height//2,play_mode.DK_height//2,play_mode.DK_height//2]
         self.speed = 1
@@ -36,6 +37,7 @@ class BackGround:
         self.layer3.draw(self.x[2], self.y[2],3500, 800)
         self.layer4.draw(self.x[3], self.y[3],3500, 800)
         self.layer5.draw(self.x[4], self.y[4],5000, 800)
+        self.floor.clip_draw(30, 200, 600,30, self.x[4], 30, 5000, 110)
         pass
 
 class Portal:
