@@ -55,19 +55,13 @@ class Player:
         self.skill_count = get_time()
         self.hp_png = load_image('Resource\\health_bar.png')
         self.near_portal = False
-        self.basic_atk = load_wav('Resource\\sword-sound-1.mp3')
-        self.basic_atk.set_volume(50)
-        self.skill = load_wav('Resource\\sword-sound-2.mp3')
-        self.skill.set_volume(50)
-        self.skill = load_wav('Resource\\sword-sound-2.mp3')
-        self.basic_cooldown = get_time()
-
-        self.hit_sound = [load_wav('Resource\\hit_sound_1.mp3'), load_wav('Resource\\hit_sound_2.mp3')]
-        self.hit_sound[0].set_volume(50)
-        self.hit_sound[1].set_volume(70)
+        self.jump_sound = load_wav('Resource\\jump_sound.mp3')
+        self.jump_sound.set_volume(30)
 
 
-        # 변신할 때 바껴야 할 것들
+
+
+        # 변신할 때 바껴야 할 것들, 바뀌지 않는 게 있다면 여기서 찾아라 제발
         self.hp = 3
         self.charinfoexist = [False, False]
         self.charinfo = [CharInfo(), CharInfo()]
@@ -81,6 +75,15 @@ class Player:
         self.skill_atk_action = 2
         self.fall_action = 9
         self.idle_action = 18
+        self.basic_atk = load_wav('Resource\\sword-sound-1.mp3')
+        self.basic_atk.set_volume(50)
+        self.skill = load_wav('Resource\\sword-sound-2.mp3')
+        self.skill.set_volume(50)
+        self.skill = load_wav('Resource\\sword-sound-2.mp3')
+        self.basic_cooldown = get_time()
+        self.hit_sound = [load_wav('Resource\\hit_sound_1.mp3'), load_wav('Resource\\hit_sound_2.mp3')]
+        self.hit_sound[0].set_volume(50)
+        self.hit_sound[1].set_volume(70)
 
         # 떨어짐 체크
         self.vertical = 0
@@ -209,6 +212,7 @@ class Player:
             if event.key == SDLK_SPACE and self.fall == False:
                 self.fall = True
                 self.vertical = 16
+                self.jump_sound.play()
             if event.key == SDLK_t:
                 play_mode.collider_trig = not play_mode.collider_trig
         elif event.type == SDL_KEYUP:
