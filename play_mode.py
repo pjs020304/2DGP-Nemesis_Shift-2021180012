@@ -8,7 +8,7 @@ import background
 import monster
 import start_mode
 import death_mode
-import play_mode2
+import play_mode
 
 def handle_events():
     global running
@@ -43,9 +43,10 @@ def init():
     collider_trig = False
     gravity = 1
 
-    backgrounds = background.BackGround()
+    backgrounds = background.BackGround(1)
     game_world.add_obj(backgrounds,0)
 
+    2680
     portal = background.Portal(2680, 270)
     game_world.add_obj(portal, 1)
     game_world.add_collision_pair('player:portal', None, portal)
@@ -97,13 +98,40 @@ def init():
         game_world.add_collision_pair('playerATK:monster', dustjumper, None)
         game_world.add_collision_pair('playerFarATK:monster', dustjumper, None)
 
+def init2():
+    global blocks
+    global pandas
+    global dustjumpers
+    global backgrounds
+    global portal
+    global player
+    global background
+
+    player.x, player.y = 400,90
+
+    backgrounds = background.BackGround(2)
+    game_world.add_obj(backgrounds, 0)
+
+    portal = background.Portal(2680, 270)
+    game_world.add_obj(portal, 1)
+    game_world.add_collision_pair('player:portal', None, portal)
+
 
 
 def update():
     if game_over:
         game_framework.change_mode(death_mode)
-    if game_change_1_2:
-        game_framework.change_mode(play_mode2)
+    if play_mode.game_change_1_2:
+        play_mode.backgrounds
+        for block in play_mode.blocks:
+            game_world.remove_object(block)
+        for o in play_mode.pandas:
+            game_world.remove_object(o)
+        for o in play_mode.dustjumpers:
+            game_world.remove_object(o)
+        game_world.remove_object(play_mode.portal)
+        play_mode.game_change_1_2 = False
+        init2()
     game_world.update()
     game_world.handle_collisions()
 def draw():
