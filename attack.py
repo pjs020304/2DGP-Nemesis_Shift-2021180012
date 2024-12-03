@@ -39,7 +39,7 @@ class PlayerFarATKMonster:
             draw_rectangle(*self.get_bb())
     def update(self):
         self.frame = (self.frame + player.FRAMES_PER_ACTION * player.ACTION_PER_TIME * game_framework.frame_time) % 16
-        if get_time() - self.current > 1.4:
+        if get_time() - self.current > 1.2:
             game_world.remove_object(self)
         if play_mode.player.dir ==1:
             if play_mode.player.x >= 700:
@@ -99,7 +99,7 @@ class MonsterFarATKPlayer:
             self.font.draw(self.x, self.y + self.size_y // 4, '!!!Danger!!!', (255, 0, 0))
     def update(self):
         self.frame = (self.frame + player.FRAMES_PER_ACTION * player.ACTION_PER_TIME * game_framework.frame_time) % 22
-        if get_time() - self.current > 1.4:
+        if get_time() - self.current > 1.2:
             game_world.remove_object(self)
         if play_mode.player.dir ==1:
             if play_mode.player.x >= 700:
