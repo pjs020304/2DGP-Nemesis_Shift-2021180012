@@ -3,8 +3,11 @@ import play_mode
 import player
 import game_framework
 class BackGround:
-    def __init__(self):
-        self.layer1 = load_image('Resource\\layer 1.png')
+    def __init__(self, stage):
+        if stage == 1:
+            self.layer1 = load_image('Resource\\layer 1.png')
+        if stage == 2:
+            self.layer1 = load_image('Resource\\layer 1_2.png')
         self.layer2 = load_image('Resource\\layer 2.png')
         self.layer3 = load_image('Resource\\layer 3.png')
         self.layer4 = load_image('Resource\\layer 4.png')
