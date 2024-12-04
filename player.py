@@ -167,7 +167,7 @@ class Player:
             self.action = self.skill_atk_action
             self.frame = self.frame + FRAMES_PER_ACTION/2 * ACTION_PER_TIME * game_framework.frame_time
             if self.png == 'Resource\\Lord of the Frames spritesheet 145x47 with glow.png':
-                if self.x >=300 and self.x <=700:
+                if self.x >=100 and self.x <=900:
                     self.x += self.dir*RUN_SPEED_PPS * game_framework.frame_time*5
                 else:
                     self.min_x += self.dir*RUN_SPEED_PPS * game_framework.frame_time*5
@@ -293,6 +293,7 @@ class Player:
             self.charinfo[1].image.clip_draw(0* self.charinfo[1].width, 0 * self.charinfo[1].height, self.charinfo[1].width, self.charinfo[1].height, 280, 600, 180, 180)
         if self.corpse:
             self.font.draw(self.x, self.y + self.size_y // 4, '[E]', (255, 255, 0))
+            self.corpse = False
 
         if get_time()- self.skill_count > 5:
             self.font.draw(self.x-50, self.y +self.size_y//4+ 25, 'Skill Ready', (0, 191, 255))

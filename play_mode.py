@@ -37,16 +37,6 @@ def init():
     global backgrounds
     global portal
 
-    global lords
-    lords = [
-        monster.LordOfFrames(0, 6, 145, 47, 8, 800, 100, 150, 100, 800 + 200, 300 - 200)
-    ]
-    for lord in lords:
-        game_world.add_obj(lord, 1)
-        game_world.add_collision_pair('player:monster', None, lord)
-        game_world.add_collision_pair('playerATK:monster', lord, None)
-        game_world.add_collision_pair('playerFarATK:monster', lord, None)
-
     game_over = False
     game_change_1_2 = False
 
@@ -69,7 +59,15 @@ def init():
     game_world.add_collision_pair('monsterATK:player', None, player)
     game_world.add_collision_pair('monsterFarATK:player', None, player)
 
-
+    global lords
+    lords = [
+        monster.LordOfFrames(0, 6, 145, 47, 8, 800, 100, 150, 100, 800 + 200, 300 - 200)
+    ]
+    for lord in lords:
+        game_world.add_obj(lord, 1)
+        game_world.add_collision_pair('player:monster', None, lord)
+        game_world.add_collision_pair('playerATK:monster', lord, None)
+        game_world.add_collision_pair('playerFarATK:monster', lord, None)
 
     blocks = [
         bridge.Block(30, 176, 82, 22, 600, 175+100, 300, 100),
