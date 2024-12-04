@@ -6,11 +6,13 @@ class BackGround:
     def __init__(self, stage):
         if stage == 1:
             self.layer1 = load_image('Resource\\layer 1.png')
+            self.layer3 = load_image('Resource\\layer 3.png')
+            self.layer4 = load_image('Resource\\layer 4.png')
         if stage == 2:
             self.layer1 = load_image('Resource\\layer 1_2.png')
+            self.layer3 = load_image('Resource\\layer 3_2.png')
+            self.layer4 = load_image('Resource\\layer 4_2.png')
         self.layer2 = load_image('Resource\\layer 2.png')
-        self.layer3 = load_image('Resource\\layer 3.png')
-        self.layer4 = load_image('Resource\\layer 4.png')
         self.layer5 = load_image('Resource\\layer 5.png')
         self.floor = load_image('Resource\\DARK Edition Tileset No background.png')
         self.x = [play_mode.DK_width // 2, play_mode.DK_width // 2, play_mode.DK_width // 2, play_mode.DK_width // 2, play_mode.DK_width // 2]
@@ -31,6 +33,8 @@ class BackGround:
                 self.x[2] += player.RUN_SPEED_PPS * game_framework.frame_time/3
                 self.x[3] += player.RUN_SPEED_PPS * game_framework.frame_time/2
                 self.x[4] += player.RUN_SPEED_PPS * game_framework.frame_time
+
+
     def draw(self):
         self.layer1.draw(self.x[0], self.y[0], 3500, 800)
         self.layer2.draw(self.x[1], self.y[1],1600, 800)
