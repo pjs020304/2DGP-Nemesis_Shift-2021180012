@@ -209,6 +209,7 @@ class DustJumper(Monster):
         self.hit_sound = [load_wav('Resource\\hit_sound_1.mp3'), load_wav('Resource\\hit_sound_2.mp3')]
         self.hit_sound[0].set_volume(50)
         self.hit_sound[1].set_volume(50)
+
     def update(self):
         self.action = self.run_action
         super().update()
@@ -370,9 +371,31 @@ class LordOfFrames(Monster):
             return BehaviorTree.SUCCESS
         return BehaviorTree.RUNNING
 
-    def third_pattern_charge(self):
-        pass
+    def move_charge(self, tx, ty):
+        self.dir = math.atan2(ty - self.y, tx - self.x)
+        distance = player.RUN_SPEED_PPS * game_framework.frame_time*3
+        self.x += distance * math.cos(self.dir)
+        self.y += distance * math.sin(self.dir)
 
+    def third_pattern_charge(self):
+        if self.x-self.min_x > self.max_x - self.x: self.tx, self.ty = self.max_x, self.y
+        else: self.tx, self.ty = self.min_x, self.y
+
+        self.action = 3
+        self.move_charge(self.tx, self.ty)
+        self.frame = (self.frame + player.FRAMES_PER_ACTION * player.ACTION_PER_TIME * game_framework.frame_time) %14
+        if get_time() - self.sleeping_time > 0.2:
+            if math.cos(self.dir) <= 0:
+                monsteratk = attack.MonsterATKPlayer(self.x - 25, self.y, self.skill_atk_size_x,self.skill_atk_size_y)
+            else:
+                monsteratk = attack.MonsterATKPlayer(self.x + 25, self.y, self.skill_atk_size_x,self.skill_atk_size_y)
+            game_world.add_obj(monsteratk, 1)
+            game_world.add_collision_pair('monsterATK:player', monsteratk, None)
+            self.sleeping_time = get_time()
+        if self.distance_less_than(self.tx, self.ty, self.x, self.y, 1):
+            return BehaviorTree.SUCCESS
+        else:
+            return BehaviorTree.RUNNING
     def build_behavior_tree(self):
         # a1 = Action('Set target lacation', self.set_target_location(), 1000,1000)
         # root = self.move_to_target_location = Sequence('Move to target location', a1, a2)
@@ -385,9 +408,11 @@ class LordOfFrames(Monster):
 
 
         # c2 = Condition('플레이어가 근처에 있는가?', self.is_player_nearby, 7)
-        a4 = [Action('Heal', self.first_pattern_heal), Action('teleport and Attack', self.second_pattern_teleport_attack)]
+        a4 = [Action('Heal', self.first_pattern_heal),
+              Action('teleport and Attack', self.second_pattern_teleport_attack),
+              Action('charge attack', self.third_pattern_charge)]
 
-        select_pattern = randint(0,1)
+        select_pattern = randint(2,2)
 
         pattern_action = Sequence('3가지 패턴 중 하나 실행', a3, a4[select_pattern])
 
