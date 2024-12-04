@@ -166,6 +166,20 @@ class Player:
         if self.state == 'Skill_Attack':
             self.action = self.skill_atk_action
             self.frame = self.frame + FRAMES_PER_ACTION/2 * ACTION_PER_TIME * game_framework.frame_time
+            if self.png == 'Resource\\Lord of the Frames spritesheet 145x47 with glow.png':
+                if self.x >=300 and self.x <=700:
+                    self.x += self.dir*RUN_SPEED_PPS * game_framework.frame_time*5
+                else:
+                    self.min_x += self.dir*RUN_SPEED_PPS * game_framework.frame_time*5
+                    self.max_x += self.dir*RUN_SPEED_PPS * game_framework.frame_time*5
+                if get_time() - self.basic_cooldown > 0.1:
+                    if self.x < self.mx:
+                        playeratk = attack.PlayerATKMonster(self.x + 25, self.y, self.skill_atk_size_y,self.skill_atk_size_y)
+                    else:
+                        playeratk = attack.PlayerATKMonster(self.x - 25, self.y, self.skill_atk_size_y,self.skill_atk_size_y)
+                    game_world.add_obj(playeratk, 1)
+                    game_world.add_collision_pair('playerATK:monster', None, playeratk)
+                    self.basic_cooldown = get_time()
             if self.frame >=8:
                 self.state = 'Idle'
                 self.frame = 0
