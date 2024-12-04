@@ -37,6 +37,16 @@ def init():
     global backgrounds
     global portal
 
+    global lords
+    lords = [
+        monster.LordOfFrames(0, 6, 145, 47, 8, 800, 100, 150, 100, 800 + 200, 300 - 200)
+    ]
+    for lord in lords:
+        game_world.add_obj(lord, 1)
+        game_world.add_collision_pair('player:monster', None, lord)
+        game_world.add_collision_pair('playerATK:monster', lord, None)
+        game_world.add_collision_pair('playerFarATK:monster', lord, None)
+
     game_over = False
     game_change_1_2 = False
 
@@ -47,7 +57,7 @@ def init():
     game_world.add_obj(backgrounds,0)
 
     2680
-    portal = background.Portal(2680, 270)
+    portal = background.Portal(500, 270)
     game_world.add_obj(portal, 1)
     game_world.add_collision_pair('player:portal', None, portal)
 
@@ -75,7 +85,7 @@ def init():
     ]
     for block in blocks:
         game_world.add_obj(block, 0)
-        pass
+
     for block in blocks:
         game_world.add_collision_pair('player:block', None, block)
 
@@ -103,18 +113,29 @@ def init2():
     global pandas
     global dustjumpers
     global backgrounds
-    global portal
+    global portal2
     global player
     global background
 
     player.x, player.y = 400,90
+    game_world.add_collision_pair('player:portal2', player, None)
 
     backgrounds = background.BackGround(2)
     game_world.add_obj(backgrounds, 0)
 
-    portal = background.Portal(2680, 270)
-    game_world.add_obj(portal, 1)
-    game_world.add_collision_pair('player:portal', None, portal)
+    blocks = [
+        bridge.Block(30, 176, 82, 22, DK_width//2, 100, 3000, 100),
+        bridge.Block(30, 176, 82, 22, DK_width//2, 250, 3000, 100)
+    ]
+    for block in blocks:
+        game_world.add_obj(block, 0)
+
+    for block in blocks:
+        game_world.add_collision_pair('player:block', None, block)
+
+    #portal2 = background.Portal(2680, 270)
+    #game_world.add_obj(portal, 1)
+    #game_world.add_collision_pair('player:portal2', None, portal)
 
 
 
@@ -122,7 +143,6 @@ def update():
     if game_over:
         game_framework.change_mode(death_mode)
     if play_mode.game_change_1_2:
-        play_mode.backgrounds
         for block in play_mode.blocks:
             game_world.remove_object(block)
         for o in play_mode.pandas:
@@ -134,6 +154,8 @@ def update():
         init2()
     game_world.update()
     game_world.handle_collisions()
+
+
 def draw():
     clear_canvas()
     game_world.render()

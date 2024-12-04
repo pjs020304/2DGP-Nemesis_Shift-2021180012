@@ -46,6 +46,7 @@ class Monster:
                 self.min_x+=player.RUN_SPEED_PPS * game_framework.frame_time
                 self.tx +=player.RUN_SPEED_PPS * game_framework.frame_time
 
+
         # if self.x >= self.max_x or self.x <= self.min_x:
         #     self.dir = self.dir*(-1)
         self.bt.run()
@@ -254,3 +255,95 @@ class DustJumper(Monster):
                 self.tx, self.ty= random.randint(int(self.min_x), int(self.max_x)), self.y
             return BehaviorTree.RUNNING
         return BehaviorTree.FAIL
+
+class LordOfFrames(Monster):
+    def __init__(self, frame_x, action_y, width, height, frame_count, position_x, position_y, size_x, size_y, max_x,min_x):
+        super().__init__(frame_x, action_y, width, height, frame_count, position_x, position_y, size_x, size_y, max_x,min_x)
+        self.image = load_image('Resource\\Lord of the Frames spritesheet 145x47 with glow.png')
+        self.run_action = 6
+        self.basic_atk_action= 5
+        self.skill_atk_action = 3
+        self.basic_atk_size_x, self.basic_atk_size_y = 130, 50
+        self.skill_atk_size_x, self.skill_atk_size_y = 180, 100
+        self.fall_action = 1
+        self.idle_action = 7
+        self.currenthp =1
+        self.maxhp = 7
+        self.png = 'Resource\\Lord of the Frames spritesheet 145x47 with glow.png'
+        self.basic_atk = load_wav('Resource\\swing-weapon.mp3')
+        self.basic_atk.set_volume(30)
+        self.skill = load_wav('Resource\\panda_skill.mp3')
+        self.skill.set_volume(30)
+        self.hit_sound = [load_wav('Resource\\bear.mp3'), load_wav('Resource\\bear_hit_2.mp3')]
+        self.hit_sound[0].set_volume(50)
+        self.hit_sound[1].set_volume(50)
+        self.sleeping_time = get_time()
+    def update(self):
+        self.action = self.idle_action
+        super().update()
+
+        if self.state == 'Basic_Attack':
+            self.action = self.basic_atk_action
+            self.frame = (self.frame + player.FRAMES_PER_ACTION * player.ACTION_PER_TIME * game_framework.frame_time)
+            if self.frame >=4:
+                self.action = self.idle_action
+                self.state = 'Walk'
+                self.frame = 0
+                self.current_time = get_time()
+        elif self.state == 'Die':
+            self.action = 0
+            if int(self.frame) <=8:
+                self.frame = self.frame + player.FRAMES_PER_ACTION/4 * player.ACTION_PER_TIME * game_framework.frame_time
+
+    def draw(self):
+        super().draw()
+        for i in range(self.currenthp):
+            self.hp_png.draw(self.x-40 + i*20, self.y+20, 20, 30)
+
+    def handle_collision(self, group, other):
+        if group == 'playerATK:monster':
+            self.currenthp -=1
+            self.hit_sound[randint(0, 1)].play()
+            if self.currenthp <=0:
+                self.state = 'Die'
+                self.dir = 0
+
+    def sleeping_to_action(self):
+        self.action = self.idle_action
+        if get_time() - self.sleeping_time > 3:
+            return BehaviorTree.SUCCESS
+        return BehaviorTree.RUNNING
+
+    def first_pattern_heal(self):
+        self.action = 1
+        self.frame = (self.frame + player.FRAMES_PER_ACTION * player.ACTION_PER_TIME * game_framework.frame_time)
+        if int(self.frame) >= 20:
+            self.frame =0
+            self.action = self.idle_action
+            hp += 3
+            self.state = 'Walk'
+            return BehaviorTree.SUCCESS
+        return BehaviorTree.RUNNING
+
+    def second_pattern_charge(self):
+
+
+    def build_behavior_tree(self):
+        # a1 = Action('Set target lacation', self.set_target_location(), 1000,1000)
+        # root = self.move_to_target_location = Sequence('Move to target location', a1, a2)
+
+        a1 = Action('Move to', self.move_to)
+        a2 = Action('Set random location', self.set_random_location)
+        root = wander = Sequence('Wander', a2, a1)
+
+        c1 = Condition('다음 패턴까지 수면', self.sleeping_to_action)
+
+
+        c1 = Condition('플레이어가 근처에 있는가?', self.is_player_nearby, 7)
+        a3 = Action('Attack player', self.attack_player)
+        attack_player = Sequence('플레이어를 공격', c1, a3)
+
+        move_and_attack = Selector('공격할건지 안할건지 선택', attack_player, a1)
+
+        root = Sequence('이동하고 공격', move_and_attack,wander)
+        # root = attack_or_flee = Selector('공격 또는 무작위 이동', wander, attack_player)
