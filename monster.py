@@ -49,7 +49,8 @@ class Monster:
 
         # if self.x >= self.max_x or self.x <= self.min_x:
         #     self.dir = self.dir*(-1)
-        self.bt.run()
+        if self.state != 'Die':
+            self.bt.run()
     def handle_event(self, event):
         pass
     def draw(self):
@@ -97,7 +98,7 @@ class Monster:
             self.move_slightly_to(self.tx, self.ty)
             if get_time() - self.current_time > self.attack_cooldown and self.state != 'Die':
                 self.state = 'Basic_Attack'
-                if math.cos(self.dir) > 0:
+                if math.cos(self.dir) <= 0:
                     monsteratk = attack.MonsterATKPlayer(self.x - 25, self.y, self.basic_atk_size_x,
                                                          self.basic_atk_size_y)
                 else:
@@ -263,7 +264,7 @@ class LordOfFrames(Monster):
         self.run_action = 6
         self.basic_atk_action= 5
         self.skill_atk_action = 3
-        self.basic_atk_size_x, self.basic_atk_size_y = 130, 50
+        self.basic_atk_size_x, self.basic_atk_size_y = 160, 50
         self.skill_atk_size_x, self.skill_atk_size_y = 180, 100
         self.fall_action = 1
         self.idle_action = 7
@@ -278,6 +279,7 @@ class LordOfFrames(Monster):
         self.hit_sound[0].set_volume(50)
         self.hit_sound[1].set_volume(50)
         self.sleeping_time = get_time()
+        self.teleport_atk = False
     def update(self):
         self.action = self.idle_action
         super().update()
@@ -294,6 +296,9 @@ class LordOfFrames(Monster):
             self.action = 0
             if int(self.frame) <=8:
                 self.frame = self.frame + player.FRAMES_PER_ACTION/4 * player.ACTION_PER_TIME * game_framework.frame_time
+        elif self.state == 'heal':
+            pass
+
 
     def draw(self):
         super().draw()
@@ -308,25 +313,65 @@ class LordOfFrames(Monster):
                 self.state = 'Die'
                 self.dir = 0
 
+    def move_to(self, r=1.5):
+        if self.state != 'Die':
+            self.move_slightly_to(self.tx, self.ty)
+            if self.distance_less_than(self.tx, self.ty, self.x, self.y, r):
+                self.sleeping_time = get_time()
+                return BehaviorTree.SUCCESS
+            else:
+                return BehaviorTree.RUNNING
+
     def sleeping_to_action(self):
         self.action = self.idle_action
-        if get_time() - self.sleeping_time > 3:
+        if get_time() - self.sleeping_time > 2:
+            self.current_time = get_time()
+            self.sleeping_time = get_time()
+            self.player_x, self.player_y =  play_mode.player.x, play_mode.player.y
+            self.old_x, self.old_y = self.x, self.y
             return BehaviorTree.SUCCESS
         return BehaviorTree.RUNNING
 
     def first_pattern_heal(self):
+        self.state = 'heal'
         self.action = 1
         self.frame = (self.frame + player.FRAMES_PER_ACTION * player.ACTION_PER_TIME * game_framework.frame_time)
-        if int(self.frame) >= 20:
+        if self.frame >= 20:
             self.frame =0
             self.action = self.idle_action
-            hp += 3
+            self.currenthp += 3
             self.state = 'Walk'
             return BehaviorTree.SUCCESS
         return BehaviorTree.RUNNING
 
-    def second_pattern_charge(self):
 
+    def second_pattern_teleport_attack(self):
+        self.x, self.y = self.player_x, self.player_y
+        if get_time() - self.current_time > 1 and not self.teleport_atk:
+            if math.cos(self.dir) <= 0:
+                monsteratk = attack.MonsterATKPlayer(self.x - 25, self.y, self.basic_atk_size_x,
+                                                     self.basic_atk_size_y)
+            else:
+                monsteratk = attack.MonsterATKPlayer(self.x + 25, self.y, self.basic_atk_size_x,
+                                                     self.basic_atk_size_y)
+            game_world.add_obj(monsteratk, 1)
+            game_world.add_collision_pair('monsterATK:player', monsteratk, None)
+            self.frame = 0
+            self.state = 'Basic_Attack'
+            self.current_time = get_time()
+            self.basic_atk.play()
+            self.teleport_atk = True
+
+        if get_time() - self.current_time >1 and self.teleport_atk:
+            self.x, self.y = self.old_x, self.old_y
+            self.sleeping_time = get_time()
+            self.current_time = get_time()
+            self.teleport_atk =False
+            return BehaviorTree.SUCCESS
+        return BehaviorTree.RUNNING
+
+    def third_pattern_charge(self):
+        pass
 
     def build_behavior_tree(self):
         # a1 = Action('Set target lacation', self.set_target_location(), 1000,1000)
@@ -336,14 +381,19 @@ class LordOfFrames(Monster):
         a2 = Action('Set random location', self.set_random_location)
         root = wander = Sequence('Wander', a2, a1)
 
-        c1 = Condition('다음 패턴까지 수면', self.sleeping_to_action)
+        a3 = Action('다음 패턴까지 수면', self.sleeping_to_action)
 
 
-        c1 = Condition('플레이어가 근처에 있는가?', self.is_player_nearby, 7)
-        a3 = Action('Attack player', self.attack_player)
-        attack_player = Sequence('플레이어를 공격', c1, a3)
+        # c2 = Condition('플레이어가 근처에 있는가?', self.is_player_nearby, 7)
+        a4 = [Action('Heal', self.first_pattern_heal), Action('teleport and Attack', self.second_pattern_teleport_attack)]
 
-        move_and_attack = Selector('공격할건지 안할건지 선택', attack_player, a1)
+        select_pattern = randint(0,1)
 
-        root = Sequence('이동하고 공격', move_and_attack,wander)
+        pattern_action = Sequence('3가지 패턴 중 하나 실행', a3, a4[select_pattern])
+
+        # move_and_attack = Selector('공격할건지 안할건지 선택', attack_player, a1)
+
+        root = Sequence('이동하고 공격', pattern_action,wander)
         # root = attack_or_flee = Selector('공격 또는 무작위 이동', wander, attack_player)
+
+        self.bt = BehaviorTree(root)
