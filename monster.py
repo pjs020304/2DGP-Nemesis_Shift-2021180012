@@ -7,6 +7,7 @@ import player
 import random
 import attack
 import game_world
+import background
 
 
 
@@ -258,10 +259,10 @@ class DustJumper(Monster):
             return BehaviorTree.RUNNING
         return BehaviorTree.FAIL
 
-class LordOfFrames(Monster):
+class LordOfFlames(Monster):
     def __init__(self, frame_x, action_y, width, height, frame_count, position_x, position_y, size_x, size_y, max_x,min_x):
         super().__init__(frame_x, action_y, width, height, frame_count, position_x, position_y, size_x, size_y, max_x,min_x)
-        self.image = load_image('Resource\\Lord of the Frames spritesheet 145x47 with glow.png')
+        self.image = load_image('Resource\\Lord of the Flames spritesheet 145x47 with glow.png')
         self.run_action = 6
         self.basic_atk_action= 5
         self.skill_atk_action = 3
@@ -271,7 +272,7 @@ class LordOfFrames(Monster):
         self.idle_action = 7
         self.currenthp =1
         self.maxhp = 7
-        self.png = 'Resource\\Lord of the Frames spritesheet 145x47 with glow.png'
+        self.png = 'Resource\\Lord of the Flames spritesheet 145x47 with glow.png'
         self.basic_atk = load_wav('Resource\\swing-weapon.mp3')
         self.basic_atk.set_volume(30)
         self.skill = load_wav('Resource\\panda_skill.mp3')
@@ -297,8 +298,10 @@ class LordOfFrames(Monster):
             self.action = 0
             if int(self.frame) <=8:
                 self.frame = self.frame + player.FRAMES_PER_ACTION/4 * player.ACTION_PER_TIME * game_framework.frame_time
+
         elif self.state == 'heal':
             pass
+
 
 
     def draw(self):
@@ -310,9 +313,12 @@ class LordOfFrames(Monster):
         if group == 'playerATK:monster':
             self.currenthp -=1
             self.hit_sound[randint(0, 1)].play()
-            if self.currenthp <=0:
+            if self.currenthp <=0 and self.state != 'Die':
                 self.state = 'Die'
                 self.dir = 0
+                portal2 = background.Portal(2680, 170)
+                game_world.add_obj(portal2, 1)
+                game_world.add_collision_pair('player:portal2', None, portal2)
 
     def move_to(self, r=1.5):
         if self.state != 'Die':
@@ -422,3 +428,5 @@ class LordOfFrames(Monster):
         # root = attack_or_flee = Selector('공격 또는 무작위 이동', wander, attack_player)
 
         self.bt = BehaviorTree(root)
+
+

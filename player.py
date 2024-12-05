@@ -168,7 +168,7 @@ class Player:
         if self.state == 'Skill_Attack':
             self.action = self.skill_atk_action
             self.frame = self.frame + FRAMES_PER_ACTION/2 * ACTION_PER_TIME * game_framework.frame_time
-            if self.png == 'Resource\\Lord of the Frames spritesheet 145x47 with glow.png':
+            if self.png == 'Resource\\Lord of the Flames spritesheet 145x47 with glow.png':
                 if self.x >=100 and self.x <=900:
                     self.x += self.dir*RUN_SPEED_PPS * game_framework.frame_time*5
                 else:

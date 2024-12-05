@@ -54,20 +54,13 @@ def init():
     player = character.Player()
     game_world.add_obj(player,1)
     game_world.add_collision_pair('player:portal', player, None)
+    game_world.add_collision_pair('player:portal2', player, None)
     game_world.add_collision_pair('player:block', player, None)
     game_world.add_collision_pair('player:monster', player, None)
     game_world.add_collision_pair('monsterATK:player', None, player)
     game_world.add_collision_pair('monsterFarATK:player', None, player)
 
-    global lords
-    lords = [
-        monster.LordOfFrames(0, 6, 145, 47, 8, 800, 100, 150, 100, 800 + 200, 300 - 200)
-    ]
-    for lord in lords:
-        game_world.add_obj(lord, 1)
-        game_world.add_collision_pair('player:monster', None, lord)
-        game_world.add_collision_pair('playerATK:monster', lord, None)
-        game_world.add_collision_pair('playerFarATK:monster', lord, None)
+
 
     blocks = [
         bridge.Block(30, 176, 82, 22, 600, 175+100, 300, 100),
@@ -114,9 +107,12 @@ def init2():
     global portal2
     global player
     global background
+    global lords
+    global portal2
+
+
 
     player.x, player.y = 400,90
-    game_world.add_collision_pair('player:portal2', player, None)
 
     backgrounds = background.BackGround(2)
     game_world.add_obj(backgrounds, 0)
@@ -131,8 +127,19 @@ def init2():
     for block in blocks:
         game_world.add_collision_pair('player:block', None, block)
 
-    #portal2 = background.Portal(2680, 270)
-    #game_world.add_obj(portal, 1)
+    lords = [
+        monster.LordOfFlames(0, 6, 145, 47, 8, 800, 100, 150, 100, 800 + 200, 300 - 200)
+    ]
+    for lord in lords:
+        game_world.add_obj(lord, 1)
+        game_world.add_collision_pair('player:monster', None, lord)
+        game_world.add_collision_pair('playerATK:monster', lord, None)
+        game_world.add_collision_pair('playerFarATK:monster', lord, None)
+
+
+
+    #portal2 = background.Portal(2680, 170)
+    #game_world.add_obj(portal2, 1)
     #game_world.add_collision_pair('player:portal2', None, portal)
 
 
