@@ -19,19 +19,37 @@ class Pannel:
     def update(self):
         pass
 
+class Layer:
+    def __init__(self):
+        self.layer = load_image('Resource\\layer 1.png')
+
+    def draw(self):
+        self.layer.draw(500, 400, 1000, 1000)
+
+    def update(self):
+        pass
+
+
+
 
 def init():
     global pannels
+    global layer
+
     pannels = [Pannel('Resource\\UI_continue.png', play_mode.DK_width//2, play_mode.DK_height//2+200, 600, 100), Pannel('Resource\\UI_option.png',play_mode.DK_width//2, play_mode.DK_height//2, 600, 100), Pannel('Resource\\UI_quit.png',play_mode.DK_width//2, play_mode.DK_height//2-200, 600, 100)]
 
+    layer = Layer()
+    game_world.add_obj(layer, 1)
 
     for pannel in pannels:
-        game_world.add_obj(pannel, 1)
+        game_world.add_obj(pannel, 2)
 
 
 def finish():
     for pannel in pannels:
         game_world.remove_object(pannel)
+    game_world.remove_object(layer)
+
 
 def handle_events():
     events = get_events()
