@@ -9,6 +9,7 @@ import monster
 import start_mode
 import death_mode
 import play_mode
+import story_mode
 
 def handle_events():
     global running
@@ -187,6 +188,8 @@ def init3():
         game_world.add_collision_pair('player:monster', None, lord)
         game_world.add_collision_pair('playerATK:monster', lord, None)
         game_world.add_collision_pair('playerFarATK:monster', lord, None)
+
+    game_framework.push_mode(story_mode)
 
     # portal2 = background.Portal(2680, 100)
     # game_world.add_obj(portal2, 1)

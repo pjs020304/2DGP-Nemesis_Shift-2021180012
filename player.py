@@ -375,11 +375,6 @@ class Player:
             if self.cliked_e:
                 self.cliked_e = False
                 play_mode.game_change_2_3 = True
-
-
-
-
-
         if group == 'monsterATK:player':
             self.hp -=1
             self.y +=20
