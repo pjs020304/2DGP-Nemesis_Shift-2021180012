@@ -36,10 +36,11 @@ def init():
     global game_change_1_2
     global backgrounds
     global portal
+    global game_change_2_3
 
     game_over = False
     game_change_1_2 = False
-
+    game_change_2_3 = False
     collider_trig = False
     gravity = 1
 
@@ -110,7 +111,8 @@ def init2():
     global player
     global background
     global lords
-    global portal2
+
+    play_mode.game_change_2_3 = False
 
 
 
@@ -131,7 +133,7 @@ def init2():
         game_world.add_collision_pair('player:block', None, block)
 
     lords = [
-        monster.LordOfFlames(0, 6, 145, 47, 8, 800, 100, 150, 100,DK_width//2+ 1000,DK_width//2- 1000)
+        monster.LordOfFlames(0, 6, 145, 47, 8, 800, 100, 180, 150,DK_width//2+ 1000,DK_width//2- 1000)
     ]
     for lord in lords:
         game_world.add_obj(lord, 1)
@@ -141,15 +143,59 @@ def init2():
 
 
 
-    #portal2 = background.Portal(2680, 170)
-    #game_world.add_obj(portal2, 1)
-    #game_world.add_collision_pair('player:portal2', None, portal)
+    # portal2 = background.Portal(2680, 100)
+    # game_world.add_obj(portal2, 1)
+    # game_world.add_collision_pair('player:portal2', None, portal)
 
+def init3():
+    global blocks
+    global pandas
+    global dustjumpers
+    global backgrounds
+    global portal2
+    global player
+    global background
+    global lords
 
+    player.x, player.y = 400, 90
+
+    backgrounds = background.BackGround(3)
+    game_world.add_obj(backgrounds, 0)
+
+    blocks = [
+        bridge.Block(30, 176, 82, 22, -1100, 250, 300, 100),
+        bridge.Block(30, 176, 82, 22, -700, 250, 300, 100),
+        bridge.Block(30, 176, 82, 22, -300, 250, 300, 100),
+        bridge.Block(30, 176, 82, 22, 500, 250, 1000, 100),
+        bridge.Block(30, 176, 82, 22, 1400, 250, 300, 100),
+        bridge.Block(30, 176, 82, 22, 1800, 250, 300, 100),
+
+        bridge.Block(30, 176, 82, 22, DK_width // 2, 100, 3000, 100)
+    ]
+    # bridge.Block(30, 176, 82, 22, DK_width // 2, 250, 3000, 100)
+    for block in blocks:
+        game_world.add_obj(block, 0)
+
+    for block in blocks:
+        game_world.add_collision_pair('player:block', None, block)
+
+    lords = [
+        monster.LordOfFlames(0, 6, 145, 47, 8, 800, 100, 150, 100, DK_width // 2 + 1000, DK_width // 2 - 1000)
+    ]
+    for lord in lords:
+        game_world.add_obj(lord, 1)
+        game_world.add_collision_pair('player:monster', None, lord)
+        game_world.add_collision_pair('playerATK:monster', lord, None)
+        game_world.add_collision_pair('playerFarATK:monster', lord, None)
+
+    # portal2 = background.Portal(2680, 100)
+    # game_world.add_obj(portal2, 1)
+    # game_world.add_collision_pair('player:portal2', None, portal)
 
 def update():
-    if game_over:
+    if play_mode.game_over:
         game_framework.change_mode(death_mode)
+
     if play_mode.game_change_1_2:
         for block in play_mode.blocks:
             game_world.remove_object(block)
@@ -157,9 +203,19 @@ def update():
             game_world.remove_object(o)
         for o in play_mode.dustjumpers:
             game_world.remove_object(o)
+        game_world.remove_collision_object(play_mode.portal)
         game_world.remove_object(play_mode.portal)
         play_mode.game_change_1_2 = False
         init2()
+
+    if play_mode.game_change_2_3:
+        for block in play_mode.blocks:
+            game_world.remove_object(block)
+        game_world.remove_object(play_mode.portal2)
+        play_mode.game_change_2_3 = False
+        for o in play_mode.lords:
+            game_world.remove_object(o)
+        init3()
     game_world.update()
     game_world.handle_collisions()
 

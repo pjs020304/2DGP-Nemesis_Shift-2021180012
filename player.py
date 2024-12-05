@@ -55,6 +55,7 @@ class Player:
         self.skill_count = get_time()
         self.hp_png = load_image('Resource\\health_bar.png')
         self.near_portal = False
+        self.near_portal2 = False
         self.jump_sound = load_wav('Resource\\jump_sound.mp3')
         self.jump_sound.set_volume(30)
         self.change_sound = load_wav('Resource\\change_sound.mp3')
@@ -306,12 +307,14 @@ class Player:
         if self.near_portal:
             self.font.draw(self.x, self.y + self.size_y // 4, '[E]', (255, 255, 0))
         self.near_portal = False
-
+        if self.near_portal2:
+            self.font.draw(self.x, self.y + self.size_y // 4, '[E]', (255, 255, 0))
+        self.near_portal2 = False
 
 
 
     def get_bb(self):
-        return self.x-self.size_x//6, self.y-self.size_y//4, self.x+self.size_x//6, self.y+self.size_y//6
+        return self.x-self.size_x//6, self.y-self.size_y//3, self.x+self.size_x//6, self.y+self.size_y//6
 
     def handle_collision(self, group, other):
         if group == 'player:block' and self.vertical < 0:
@@ -367,6 +370,11 @@ class Player:
             if self.cliked_e:
                 self.cliked_e = False
                 play_mode.game_change_1_2 = True
+        if group == 'player:portal2':
+            self.near_portal2 = True
+            if self.cliked_e:
+                self.cliked_e = False
+                play_mode.game_change_2_3 = True
 
 
 

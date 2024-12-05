@@ -1,3 +1,5 @@
+from random import randint
+
 from pico2d import *
 import game_world
 import play_mode
@@ -21,6 +23,8 @@ class PlayerATKMonster:
     def handle_collision(self, group, other):
         if group == 'playerATK:monster' and other.state != 'Die':
             game_world.remove_object(self)
+            other.hit_sound[randint(0, 1)].play()
+
 
 class PlayerFarATKMonster:
     def __init__(self, x, y, size_x, size_y):
@@ -38,7 +42,7 @@ class PlayerFarATKMonster:
         if play_mode.collider_trig:
             draw_rectangle(*self.get_bb())
     def update(self):
-        self.frame = (self.frame + player.FRAMES_PER_ACTION * player.ACTION_PER_TIME * game_framework.frame_time) % 16
+        self.frame = (self.frame + player.FRAMES_PER_ACTION * player.ACTION_PER_TIME * game_framework.frame_time)
         if get_time() - self.current > 1.2:
             game_world.remove_object(self)
         if play_mode.player.dir ==1:
@@ -52,11 +56,11 @@ class PlayerFarATKMonster:
         return self.x - self.size_x//2, self.y - self.size_y//2, self.x + self.size_x//2, self.y + self.size_y//2
     def handle_collision(self, group, other):
         if group == 'playerFarATK:monster' and other.state != 'Die' and get_time() - self.current > 0.7:
+            game_world.remove_collision_object(self)
             game_world.remove_object(self)
             other.currenthp -= 1
-            if other.currenthp <=0:
-                other.state = 'Die'
-                other.dir = 0
+            other.hit_sound[randint(0, 1)].play()
+
 
 class MonsterATKPlayer:
     def __init__(self, x, y, size_x, size_y):
@@ -98,7 +102,7 @@ class MonsterFarATKPlayer:
         else:
             self.font.draw(self.x, self.y + self.size_y // 4, '!!!Danger!!!', (255, 0, 0))
     def update(self):
-        self.frame = (self.frame + player.FRAMES_PER_ACTION * player.ACTION_PER_TIME * game_framework.frame_time) % 22
+        self.frame = (self.frame + player.FRAMES_PER_ACTION * player.ACTION_PER_TIME * game_framework.frame_time)
         if get_time() - self.current > 1.2:
             game_world.remove_object(self)
         if play_mode.player.dir ==1:

@@ -18,6 +18,13 @@ class BackGround:
             self.bgm2 = load_music('Resource//2Stage_Sound.mp3')
             self.bgm2.set_volume(20)
             self.bgm2.repeat_play()
+        if stage == 3:
+            self.layer1 = load_image('Resource\\layer 1_3.png')
+            self.layer3 = load_image('Resource\\layer 3_3.png')
+            self.layer4 = load_image('Resource\\layer 4_3.png')
+            self.bgm2 = load_music('Resource//Final_Stage_Music.mp3')
+            self.bgm2.set_volume(20)
+            self.bgm2.repeat_play()
         self.layer2 = load_image('Resource\\layer 2.png')
         self.layer5 = load_image('Resource\\layer 5.png')
         self.floor = load_image('Resource\\DARK Edition Tileset No background.png')

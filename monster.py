@@ -144,7 +144,7 @@ class Panda(Monster):
         self.run_action = 12
         self.basic_atk_action= 3
         self.skill_atk_action = 6
-        self.basic_atk_size_x, self.basic_atk_size_y = 130, 50
+        self.basic_atk_size_x, self.basic_atk_size_y = 130, 100
         self.skill_atk_size_x, self.skill_atk_size_y = 180, 100
         self.fall_action = 11
         self.idle_action = 13
@@ -183,7 +183,6 @@ class Panda(Monster):
     def handle_collision(self, group, other):
         if group == 'playerATK:monster' and self.state != 'Die':
             self.currenthp -=1
-            self.hit_sound[randint(0, 1)].play()
             if self.currenthp <=0:
                 self.state = 'Die'
                 self.dir = 0
@@ -237,7 +236,6 @@ class DustJumper(Monster):
     def handle_collision(self, group, other):
         if group == 'playerATK:monster' and self.state != 'Die':
             self.currenthp -=1
-            self.hit_sound[randint(0, 1)].play()
             if self.currenthp <=0:
                 self.state = 'Die'
                 self.dir = 0.0
@@ -313,13 +311,19 @@ class LordOfFlames(Monster):
     def handle_collision(self, group, other):
         if group == 'playerATK:monster':
             self.currenthp -=1
-            self.hit_sound[randint(0, 1)].play()
             if self.currenthp <=0 and self.state != 'Die':
                 self.state = 'Die'
                 self.dir = 0
-                portal2 = background.Portal(2680, 170)
-                game_world.add_obj(portal2, 1)
-                game_world.add_collision_pair('player:portal2', None, portal2)
+                play_mode.portal2 = background.Portal(500, 130)
+                game_world.add_obj(play_mode.portal2, 1)
+                game_world.add_collision_pair('player:portal2', None, play_mode.portal2)
+        if group == 'playerFarATK:monster':
+            if self.currenthp <= 0 and self.state != 'Die':
+                self.state = 'Die'
+                self.dir = 0
+                play_mode.portal2 = background.Portal(500, 130)
+                game_world.add_obj(play_mode.portal2, 1)
+                game_world.add_collision_pair('player:portal2', None, play_mode.portal2)
 
     def move_to(self, r=1.5):
         if self.state != 'Die':
