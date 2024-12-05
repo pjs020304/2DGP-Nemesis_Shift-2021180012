@@ -57,8 +57,8 @@ class Player:
         self.near_portal = False
         self.jump_sound = load_wav('Resource\\jump_sound.mp3')
         self.jump_sound.set_volume(30)
-
-
+        self.change_sound = load_wav('Resource\\change_sound.mp3')
+        self.change_sound.set_volume(30)
 
 
         # 변신할 때 바껴야 할 것들, 바뀌지 않는 게 있다면 여기서 찾아라 제발
@@ -92,33 +92,35 @@ class Player:
         self.mx, self.my = 0,0
 
     def change_char(self, charnum):
-            self.size_x, self.charinfo[charnum].size_x = self.charinfo[charnum].size_x, self.size_x
-            self.size_y, self.charinfo[charnum].size_y = self.charinfo[charnum].size_y, self.size_y
-            self.png, self.charinfo[charnum].png = self.charinfo[charnum].png, self.png
-            self.image = load_image(self.png)
-            self.charinfo[charnum].image = load_image(self.charinfo[charnum].png)
-            self.width, self.charinfo[charnum].width = self.charinfo[charnum].width, self.width
-            self.height, self.charinfo[charnum].height = self.charinfo[charnum].height, self.height
-            self.basic_atk_size_x, self.charinfo[charnum].basic_atk_size_x = self.charinfo[
-                charnum].basic_atk_size_x, self.basic_atk_size_x
-            self.basic_atk_size_y, self.charinfo[charnum].basic_atk_size_y = self.charinfo[
-                charnum].basic_atk_size_y, self.basic_atk_size_y
-            self.skill_atk_size_x, self.charinfo[charnum].skill_atk_size_x = self.charinfo[
-                charnum].skill_atk_size_x, self.skill_atk_size_x
-            self.skill_atk_size_y, self.charinfo[charnum].skill_atk_size_y = self.charinfo[
-                charnum].skill_atk_size_y, self.skill_atk_size_y
-            self.run_action, self.charinfo[charnum].run_action = self.charinfo[charnum].run_action, self.run_action
-            self.basic_atk_action, self.charinfo[charnum].basic_atk_action = self.charinfo[
-                charnum].basic_atk_action, self.basic_atk_action
-            self.skill_atk_action, self.charinfo[charnum].skill_atk_action = self.charinfo[
-                charnum].skill_atk_action, self.skill_atk_action
-            self.fall_action, self.charinfo[charnum].fall_action = self.charinfo[charnum].fall_action, self.fall_action
-            self.idle_action, self.charinfo[charnum].idle_action = self.charinfo[charnum].idle_action, self.idle_action
-            self.hp, self.charinfo[charnum].hp = self.charinfo[charnum].hp, self.hp
-            self.basic_atk, self.charinfo[charnum].basic_atk = self.charinfo[charnum].basic_atk, self.basic_atk
-            self.skill, self.charinfo[charnum].skill = self.charinfo[charnum].skill, self.skill
-            self.hit_sound[0], self.charinfo[charnum].hit_sound[0] = self.charinfo[charnum].hit_sound[0], self.hit_sound[0]
-            self.hit_sound[1], self.charinfo[charnum].hit_sound[1] = self.charinfo[charnum].hit_sound[1], self.hit_sound[1]
+        self.size_x, self.charinfo[charnum].size_x = self.charinfo[charnum].size_x, self.size_x
+        self.size_y, self.charinfo[charnum].size_y = self.charinfo[charnum].size_y, self.size_y
+        self.png, self.charinfo[charnum].png = self.charinfo[charnum].png, self.png
+        self.image = load_image(self.png)
+        self.charinfo[charnum].image = load_image(self.charinfo[charnum].png)
+        self.width, self.charinfo[charnum].width = self.charinfo[charnum].width, self.width
+        self.height, self.charinfo[charnum].height = self.charinfo[charnum].height, self.height
+        self.basic_atk_size_x, self.charinfo[charnum].basic_atk_size_x = self.charinfo[
+            charnum].basic_atk_size_x, self.basic_atk_size_x
+        self.basic_atk_size_y, self.charinfo[charnum].basic_atk_size_y = self.charinfo[
+            charnum].basic_atk_size_y, self.basic_atk_size_y
+        self.skill_atk_size_x, self.charinfo[charnum].skill_atk_size_x = self.charinfo[
+            charnum].skill_atk_size_x, self.skill_atk_size_x
+        self.skill_atk_size_y, self.charinfo[charnum].skill_atk_size_y = self.charinfo[
+            charnum].skill_atk_size_y, self.skill_atk_size_y
+        self.run_action, self.charinfo[charnum].run_action = self.charinfo[charnum].run_action, self.run_action
+        self.basic_atk_action, self.charinfo[charnum].basic_atk_action = self.charinfo[
+            charnum].basic_atk_action, self.basic_atk_action
+        self.skill_atk_action, self.charinfo[charnum].skill_atk_action = self.charinfo[
+            charnum].skill_atk_action, self.skill_atk_action
+        self.fall_action, self.charinfo[charnum].fall_action = self.charinfo[charnum].fall_action, self.fall_action
+        self.idle_action, self.charinfo[charnum].idle_action = self.charinfo[charnum].idle_action, self.idle_action
+        self.hp, self.charinfo[charnum].hp = self.charinfo[charnum].hp, self.hp
+        self.basic_atk, self.charinfo[charnum].basic_atk = self.charinfo[charnum].basic_atk, self.basic_atk
+        self.skill, self.charinfo[charnum].skill = self.charinfo[charnum].skill, self.skill
+        self.hit_sound[0], self.charinfo[charnum].hit_sound[0] = self.charinfo[charnum].hit_sound[0], self.hit_sound[0]
+        self.hit_sound[1], self.charinfo[charnum].hit_sound[1] = self.charinfo[charnum].hit_sound[1], self.hit_sound[1]
+        self.change_sound.play()
+
 
 
     def update(self):
