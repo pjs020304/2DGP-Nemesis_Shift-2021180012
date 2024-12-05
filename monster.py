@@ -337,10 +337,13 @@ class LordOfFlames(Monster):
             self.sleeping_time = get_time()
             self.player_x, self.player_y =  play_mode.player.x, play_mode.player.y
             self.old_x, self.old_y = self.x, self.y
+            self.select_pattern = randint(0,2)
             return BehaviorTree.SUCCESS
         return BehaviorTree.RUNNING
 
     def first_pattern_heal(self):
+        if self.select_pattern != 0:
+            return BehaviorTree.FAIL
         self.state = 'heal'
         self.action = 1
         self.frame = (self.frame + player.FRAMES_PER_ACTION * player.ACTION_PER_TIME * game_framework.frame_time)
@@ -354,6 +357,8 @@ class LordOfFlames(Monster):
 
 
     def second_pattern_teleport_attack(self):
+        if self.select_pattern != 1:
+            return BehaviorTree.FAIL
         if play_mode.player.x <= 300 or play_mode.player.x >= 700:
             self.player_x -= play_mode.player.dir* player.RUN_SPEED_PPS * game_framework.frame_time
 
@@ -390,6 +395,7 @@ class LordOfFlames(Monster):
         self.y += distance * math.sin(self.dir)
 
     def third_pattern_charge(self):
+
         if self.x-self.min_x > self.max_x - self.x: self.tx, self.ty = self.max_x, self.y
         else: self.tx, self.ty = self.min_x, self.y
 
@@ -409,6 +415,17 @@ class LordOfFlames(Monster):
             return BehaviorTree.SUCCESS
         else:
             return BehaviorTree.RUNNING
+
+    def check_1(self):
+        if self.select_pattern != 0: return BehaviorTree.FAIL
+        else: return BehaviorTree.SUCCESS
+    def check_2(self):
+        if self.select_pattern != 1: return BehaviorTree.FAIL
+        else: return BehaviorTree.SUCCESS
+    def check_3(self):
+        if self.select_pattern != 2: return BehaviorTree.FAIL
+        else: return BehaviorTree.SUCCESS
+
     def build_behavior_tree(self):
         # a1 = Action('Set target lacation', self.set_target_location(), 1000,1000)
         # root = self.move_to_target_location = Sequence('Move to target location', a1, a2)
@@ -425,14 +442,20 @@ class LordOfFlames(Monster):
               Action('teleport and Attack', self.second_pattern_teleport_attack),
               Action('charge attack', self.third_pattern_charge)]
 
-        select_pattern = randint(0,2)
+        c1 = Condition('1번째 패턴인가?', self.check_1)
+        c2 = Condition('2번째 패턴인가?', self.check_2)
+        c3 = Condition('3번째 패턴인가?', self.check_3)
+
+        first_pattern = Sequence('첫번째 패턴 실행', c1, a4[0])
+        second_pattern = Sequence('두번째 패턴 실행', c2, a4[1])
+        third_pattern = Sequence('세번째 패턴 실행', c3, a4[2])
 
 
-        pattern_action = Sequence('3가지 패턴 중 하나 실행', a3, a4[1])
+        pattern_action = Selector('3가지 패턴 중 하나 실행', first_pattern, second_pattern, third_pattern)
 
         # move_and_attack = Selector('공격할건지 안할건지 선택', attack_player, a1)
 
-        root = Sequence('이동하고 공격', pattern_action,wander)
+        root = Sequence('이동하고 공격', a3, pattern_action,wander)
         # root = attack_or_flee = Selector('공격 또는 무작위 이동', wander, attack_player)
 
         self.bt = BehaviorTree(root)
