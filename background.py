@@ -8,19 +8,23 @@ class BackGround:
             self.layer1 = load_image('Resource\\layer 1.png')
             self.layer3 = load_image('Resource\\layer 3.png')
             self.layer4 = load_image('Resource\\layer 4.png')
+            self.bgm = load_music('Resource//1Stage_Sound.mp3')
+            self.bgm.set_volume(20)
+            self.bgm.repeat_play()
         if stage == 2:
             self.layer1 = load_image('Resource\\layer 1_2.png')
             self.layer3 = load_image('Resource\\layer 3_2.png')
             self.layer4 = load_image('Resource\\layer 4_2.png')
+            self.bgm2 = load_music('Resource//2Stage_Sound.mp3')
+            self.bgm2.set_volume(20)
+            self.bgm2.repeat_play()
         self.layer2 = load_image('Resource\\layer 2.png')
         self.layer5 = load_image('Resource\\layer 5.png')
         self.floor = load_image('Resource\\DARK Edition Tileset No background.png')
         self.x = [play_mode.DK_width // 2, play_mode.DK_width // 2, play_mode.DK_width // 2, play_mode.DK_width // 2, play_mode.DK_width // 2]
         self.y = [play_mode.DK_height//2,play_mode.DK_height//2,play_mode.DK_height//2,play_mode.DK_height//2,play_mode.DK_height//2]
         self.speed = 1
-        self.bgm = load_music('Resource//1Stage_Sound.mp3')
-        self.bgm.set_volume(20)
-        self.bgm.repeat_play()
+
 
     def update(self):
         if play_mode.player.dir == 1:

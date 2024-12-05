@@ -35,13 +35,13 @@ class Monster:
             if self.state == 'Walk':
                 self.frame = (self.frame + player.FRAMES_PER_ACTION * player.ACTION_PER_TIME * game_framework.frame_time) % self.frame_count
         if play_mode.player.dir == 1:
-            if play_mode.player.x >= 700 and  -1500<self.x :
+            if play_mode.player.x >= 700 and  -1500<play_mode.backgrounds.x[4]:
                 self.x -= player.RUN_SPEED_PPS * game_framework.frame_time
                 self.max_x-=player.RUN_SPEED_PPS * game_framework.frame_time
                 self.min_x-=player.RUN_SPEED_PPS * game_framework.frame_time
                 self.tx -=player.RUN_SPEED_PPS * game_framework.frame_time
         elif play_mode.player.dir == -1:
-            if play_mode.player.x <= 300and  1500>self.x:
+            if play_mode.player.x <= 300 and 1500>play_mode.backgrounds.x[4]:
                 self.x += player.RUN_SPEED_PPS * game_framework.frame_time
                 self.max_x+=player.RUN_SPEED_PPS * game_framework.frame_time
                 self.min_x+=player.RUN_SPEED_PPS * game_framework.frame_time
@@ -181,7 +181,7 @@ class Panda(Monster):
             self.hp_png.draw(self.x-40 + i*20, self.y+20, 20, 30)
 
     def handle_collision(self, group, other):
-        if group == 'playerATK:monster':
+        if group == 'playerATK:monster' and self.state != 'Die':
             self.currenthp -=1
             self.hit_sound[randint(0, 1)].play()
             if self.currenthp <=0:
@@ -235,7 +235,7 @@ class DustJumper(Monster):
             self.hp_png.draw(self.x-40 + i*20, self.y+20, 20, 30)
 
     def handle_collision(self, group, other):
-        if group == 'playerATK:monster':
+        if group == 'playerATK:monster' and self.state != 'Die':
             self.currenthp -=1
             self.hit_sound[randint(0, 1)].play()
             if self.currenthp <=0:
@@ -273,15 +273,16 @@ class LordOfFlames(Monster):
         self.currenthp =1
         self.maxhp = 7
         self.png = 'Resource\\Lord of the Flames spritesheet 145x47 with glow.png'
-        self.basic_atk = load_wav('Resource\\swing-weapon.mp3')
-        self.basic_atk.set_volume(30)
-        self.skill = load_wav('Resource\\panda_skill.mp3')
-        self.skill.set_volume(30)
+        self.basic_atk = load_wav('Resource\\fire_sound.mp3')
+        self.basic_atk.set_volume(90)
+        self.skill = load_wav('Resource\\fire_charge.mp3')
+        self.skill.set_volume(50)
         self.hit_sound = [load_wav('Resource\\bear.mp3'), load_wav('Resource\\bear_hit_2.mp3')]
         self.hit_sound[0].set_volume(50)
         self.hit_sound[1].set_volume(50)
         self.sleeping_time = get_time()
         self.teleport_atk = False
+
     def update(self):
         self.action = self.idle_action
         super().update()
@@ -353,7 +354,12 @@ class LordOfFlames(Monster):
 
 
     def second_pattern_teleport_attack(self):
+        if play_mode.player.x <= 300 or play_mode.player.x >= 700:
+            self.player_x -= play_mode.player.dir* player.RUN_SPEED_PPS * game_framework.frame_time
+
         self.x, self.y = self.player_x, self.player_y
+
+
         if get_time() - self.current_time > 1 and not self.teleport_atk:
             if math.cos(self.dir) <= 0:
                 monsteratk = attack.MonsterATKPlayer(self.x - 25, self.y, self.basic_atk_size_x,
@@ -397,6 +403,7 @@ class LordOfFlames(Monster):
                 monsteratk = attack.MonsterATKPlayer(self.x + 25, self.y, self.skill_atk_size_x,self.skill_atk_size_y)
             game_world.add_obj(monsteratk, 1)
             game_world.add_collision_pair('monsterATK:player', monsteratk, None)
+            self.skill.play()
             self.sleeping_time = get_time()
         if self.distance_less_than(self.tx, self.ty, self.x, self.y, 1):
             return BehaviorTree.SUCCESS
@@ -418,9 +425,10 @@ class LordOfFlames(Monster):
               Action('teleport and Attack', self.second_pattern_teleport_attack),
               Action('charge attack', self.third_pattern_charge)]
 
-        select_pattern = randint(2,2)
+        select_pattern = randint(0,2)
 
-        pattern_action = Sequence('3가지 패턴 중 하나 실행', a3, a4[select_pattern])
+
+        pattern_action = Sequence('3가지 패턴 중 하나 실행', a3, a4[1])
 
         # move_and_attack = Selector('공격할건지 안할건지 선택', attack_player, a1)
 

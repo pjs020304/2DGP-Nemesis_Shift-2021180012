@@ -43,14 +43,6 @@ def init():
     collider_trig = False
     gravity = 1
 
-    backgrounds = background.BackGround(1)
-    game_world.add_obj(backgrounds,0)
-
-    2680
-    portal = background.Portal(500, 270)
-    game_world.add_obj(portal, 1)
-    game_world.add_collision_pair('player:portal', None, portal)
-
     player = character.Player()
     game_world.add_obj(player,1)
     game_world.add_collision_pair('player:portal', player, None)
@@ -59,6 +51,16 @@ def init():
     game_world.add_collision_pair('player:monster', player, None)
     game_world.add_collision_pair('monsterATK:player', None, player)
     game_world.add_collision_pair('monsterFarATK:player', None, player)
+
+    backgrounds = background.BackGround(1)
+    game_world.add_obj(backgrounds,0)
+
+    2680
+    portal = background.Portal(500, 270)
+    game_world.add_obj(portal, 1)
+    game_world.add_collision_pair('player:portal', None, portal)
+
+
 
 
 
@@ -118,9 +120,10 @@ def init2():
     game_world.add_obj(backgrounds, 0)
 
     blocks = [
-        bridge.Block(30, 176, 82, 22, DK_width//2, 100, 3000, 100),
-        bridge.Block(30, 176, 82, 22, DK_width//2, 250, 3000, 100)
+        bridge.Block(30, 176, 82, 22, DK_width//2, 100, 3000, 100)
+
     ]
+    # bridge.Block(30, 176, 82, 22, DK_width // 2, 250, 3000, 100)
     for block in blocks:
         game_world.add_obj(block, 0)
 
@@ -128,7 +131,7 @@ def init2():
         game_world.add_collision_pair('player:block', None, block)
 
     lords = [
-        monster.LordOfFlames(0, 6, 145, 47, 8, 800, 100, 150, 100, 800 + 200, 300 - 200)
+        monster.LordOfFlames(0, 6, 145, 47, 8, 800, 100, 150, 100,DK_width//2+ 1000,DK_width//2- 1000)
     ]
     for lord in lords:
         game_world.add_obj(lord, 1)

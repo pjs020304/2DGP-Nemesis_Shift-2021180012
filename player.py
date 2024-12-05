@@ -76,13 +76,13 @@ class Player:
         self.fall_action = 9
         self.idle_action = 18
         self.basic_atk = load_wav('Resource\\sword-sound-1.mp3')
-        self.basic_atk.set_volume(50)
+        self.basic_atk.set_volume(70)
         self.skill = load_wav('Resource\\sword-sound-2.mp3')
         self.skill.set_volume(50)
         self.skill = load_wav('Resource\\sword-sound-2.mp3')
         self.basic_cooldown = get_time()
         self.hit_sound = [load_wav('Resource\\hit_sound_1.mp3'), load_wav('Resource\\hit_sound_2.mp3')]
-        self.hit_sound[0].set_volume(50)
+        self.hit_sound[0].set_volume(40)
         self.hit_sound[1].set_volume(70)
 
         # 떨어짐 체크
