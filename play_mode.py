@@ -181,7 +181,7 @@ def init3():
         game_world.add_collision_pair('player:block', None, block)
 
     final_lord = [
-        monster.LordOfPotion(0, 6, 145, 47, 8, 510, 300, 250, 200, 1000, 0)
+        monster.LordOfPotion(0, 6, 145, 47, 8, 510, 350, 250, 200, 1000, 0)
     ]
     for lord in final_lord:
         game_world.add_obj(lord, 1)

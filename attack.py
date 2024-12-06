@@ -1,3 +1,4 @@
+import random
 from random import randint
 
 from pico2d import *
@@ -129,21 +130,22 @@ class BossFarATKPlayer:
         self.x, self.y = x, y
         self.size_x, self.size_y = size_x, size_y
         self.current = get_time()
-        self.image = load_image('Resource\\Dusk Bomb.png')
+        self.image = load_image('Resource\\Range Poison 44x28 with glow.png')
         self.frame = 0
         self.font = load_font('Resource\\ENCR10B.TTF', 20)
-        self.basic_atk = load_wav('Resource\\lazer_atk.mp3')
+        self.basic_atk = load_wav('Resource\\bomb_sound.mp3')
         self.basic_atk.set_volume(50)
-        self.basic_atk.play()
+        self.random_time = random.random() + 0.3
 
     def draw(self):
-        self.image.clip_draw(int(self.frame) * 31, 0, 31, 38, self.x,
+        self.image.clip_draw(int(self.frame) * 44, 0, 44, 28, self.x,
                              self.y, self.size_x, self.size_y)
         if play_mode.collider_trig:
             draw_rectangle(*self.get_bb())
-        if 0.7 - (get_time() - self.current) > 0:
-            self.font.draw(self.x, self.y + self.size_y // 4, f'{format(0.8 - (get_time() - self.current), ".2f")}',
-                           (255, 255, 0))
+        if self.random_time - (get_time() - self.current) > 0:
+            self.font.draw(self.x, self.y + self.size_y // 4, f'{format(self.random_time - (get_time() - self.current), ".2f")}',(255, 255, 0))
+        elif -0.05<=self.random_time - (get_time() - self.current) <= 0:
+            self.basic_atk.play()
         else:
             self.font.draw(self.x, self.y + self.size_y // 4, '!!!Danger!!!', (255, 0, 0))
 
@@ -162,7 +164,7 @@ class BossFarATKPlayer:
         return self.x - self.size_x // 2, self.y - self.size_y // 2, self.x + self.size_x // 2, self.y + self.size_y // 2
 
     def handle_collision(self, group, other):
-        if group == 'monsterFarATK:player' and get_time() - self.current > 0.7:
+        if group == 'monsterFarATK:player' and get_time() - self.current > self.random_time:
             game_world.remove_object(self)
             other.hp -= 1
             other.y += 30

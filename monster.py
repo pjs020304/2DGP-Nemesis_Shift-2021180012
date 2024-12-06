@@ -8,7 +8,7 @@ import random
 import attack
 import game_world
 import background
-
+import ending_mode
 
 
 class Monster:
@@ -504,6 +504,8 @@ class LordOfPotion(Monster):
             self.action = 0
             if int(self.frame) <=8:
                 self.frame = self.frame + player.FRAMES_PER_ACTION/4 * player.ACTION_PER_TIME * game_framework.frame_time
+            if int(self.frame) ==8:
+                game_framework.change_mode(ending_mode)
 
         elif self.state == 'heal':
             pass
@@ -543,12 +545,12 @@ class LordOfPotion(Monster):
 
     def sleeping_to_action(self):
         self.action = self.idle_action
-        if get_time() - self.sleeping_time > 2:
+        if get_time() - self.sleeping_time > 1.5:
             self.current_time = get_time()
             self.sleeping_time = get_time()
             self.player_x, self.player_y =  play_mode.player.x, play_mode.player.y
             self.old_x, self.old_y = self.x, self.y
-            self.select_pattern = randint(2,2)
+            self.select_pattern = randint(0,3)
             return BehaviorTree.SUCCESS
         return BehaviorTree.RUNNING
 
@@ -561,7 +563,7 @@ class LordOfPotion(Monster):
         if self.frame >= 20:
             self.frame =0
             self.action = self.idle_action
-            self.currenthp += 3
+            self.currenthp += 5
             self.state = 'Walk'
             return BehaviorTree.SUCCESS
         return BehaviorTree.RUNNING
@@ -576,7 +578,7 @@ class LordOfPotion(Monster):
         self.x, self.y = self.player_x, self.player_y
 
 
-        if get_time() - self.current_time > 1 and not self.teleport_atk:
+        if get_time() - self.current_time > 0.5 and not self.teleport_atk:
             if math.cos(self.dir) <= 0:
                 monsteratk = attack.MonsterATKPlayer(self.x - 25, self.y, self.basic_atk_size_x,
                                                      self.basic_atk_size_y)
@@ -615,7 +617,7 @@ class LordOfPotion(Monster):
         self.action = 3
         self.move_charge(self.tx, self.ty)
         self.frame = (self.frame + player.FRAMES_PER_ACTION * player.ACTION_PER_TIME * game_framework.frame_time) % 14
-        if get_time() - self.sleeping_time > 0.2:
+        if get_time() - self.sleeping_time > 0.15:
             if math.cos(self.dir) <= 0:
                 monsteratk = attack.MonsterATKPlayer(self.x - 25, self.y, self.skill_atk_size_x, self.skill_atk_size_y)
             else:
@@ -629,20 +631,19 @@ class LordOfPotion(Monster):
         else:
             return BehaviorTree.RUNNING
 
-    def four_pattern_charge(self):
-
+    def four_pattern_bomb(self):
         self.action = 4
-        self.move_charge(self.tx, self.ty)
-        self.frame = (self.frame + player.FRAMES_PER_ACTION * player.ACTION_PER_TIME * game_framework.frame_time) %14
-        if get_time() - self.sleeping_time > 0.2:
-            game_world.add_obj(monsteratk, 1)
-            game_world.add_collision_pair('monsterATK:player', monsteratk, None)
-            self.skill.play()
+        self.frame = (self.frame + player.FRAMES_PER_ACTION * player.ACTION_PER_TIME * game_framework.frame_time)
+        if get_time() - self.current_time > 0.5:
+            for o in range(13):
+                monsteratk = attack.BossFarATKPlayer(randint(-500, 1000),randint(100, 500), 120,120)
+                game_world.add_obj(monsteratk, 1)
+                game_world.add_collision_pair('monsterFarATK:player', monsteratk, None)
             self.sleeping_time = get_time()
-        if self.distance_less_than(self.tx, self.ty, self.x, self.y, 1):
+            self.current_time = get_time()
             return BehaviorTree.SUCCESS
-        else:
-            return BehaviorTree.RUNNING
+        return BehaviorTree.RUNNING
+
 
     def check_1(self):
         if self.select_pattern != 0: return BehaviorTree.FAIL
@@ -672,24 +673,26 @@ class LordOfPotion(Monster):
         # c2 = Condition('플레이어가 근처에 있는가?', self.is_player_nearby, 7)
         a4 = [Action('Heal', self.first_pattern_heal),
               Action('teleport and Attack', self.second_pattern_teleport_attack),
-              Action('charge attack', self.third_pattern_charge)]
+              Action('charge attack', self.third_pattern_charge),
+              Action('teleport and Attack', self.four_pattern_bomb)
+              ]
 
         a10 = Action('돌진 위치 정하기', self.set_charge)
 
         c1 = Condition('1번째 패턴인가?', self.check_1)
         c2 = Condition('2번째 패턴인가?', self.check_2)
         c3 = Condition('3번째 패턴인가?', self.check_3)
-        c4 = Condition('3번째 패턴인가?', self.check_4)
-        c5 = Condition('3번째 패턴인가?', self.check_5)
+        c4 = Condition('4번째 패턴인가?', self.check_4)
+        c5 = Condition('5번째 패턴인가?', self.check_5)
 
         first_pattern = Sequence('첫번째 패턴 실행', c1, a4[0])
         second_pattern = Sequence('두번째 패턴 실행', c2, a4[1])
         third_pattern = Sequence('세번째 패턴 실행', c3, a10, a4[2])
-        # four_pattern = Sequence('세번째 패턴 실행', c4, a4[3])
+        four_pattern = Sequence('네번째 패턴 실행', c4, a4[3])
         # five_pattern = Sequence('세번째 패턴 실행', c5, a4[4])
 
 
-        pattern_action = Selector('3가지 패턴 중 하나 실행',  first_pattern,  second_pattern, third_pattern)
+        pattern_action = Selector('4가지 패턴 중 하나 실행',  first_pattern,  second_pattern, third_pattern, four_pattern)
 
         # move_and_attack = Selector('공격할건지 안할건지 선택', attack_player, a1)
 
