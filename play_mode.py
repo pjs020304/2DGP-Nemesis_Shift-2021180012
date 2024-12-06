@@ -96,6 +96,8 @@ def init():
 
     dustjumpers = [
         monster.DustJumper(0, 12, 42, 91, 8, 2000, 300, 150, 100, 2000 + 200, 2000 - 200)
+        ,        monster.DustJumper(0, 12, 42, 91, 8, 2100, 390, 150, 100, 2000, 2000 - 200)
+
     ]
     for dustjumper in dustjumpers:
         game_world.add_obj(dustjumper, 1)
@@ -157,6 +159,7 @@ def init3():
     global player
     global background
     global final_lord
+    global pandas
 
     player.x, player.y = 400, 90
 
@@ -188,6 +191,18 @@ def init3():
         game_world.add_collision_pair('player:monster', None, lord)
         game_world.add_collision_pair('playerATK:monster', lord, None)
         game_world.add_collision_pair('playerFarATK:monster', lord, None)
+
+    pandas = [
+        monster.Panda(0, 12, 103, 33, 8, 800, 150, 150, 100, 1000, -1000),
+        monster.Panda(0, 12, 103, 33, 8, 600, 150, 150, 100, 1000, -1000),
+        monster.Panda(0, 12, 103, 33, 8, 100, 150, 150, 100, 1000, -1000),
+    ]
+
+    for panda in pandas:
+        game_world.add_obj(panda, 1)
+        game_world.add_collision_pair('player:monster', None, panda)
+        game_world.add_collision_pair('playerATK:monster', panda, None)
+        game_world.add_collision_pair('playerFarATK:monster', panda, None)
 
     game_framework.push_mode(story_mode)
 

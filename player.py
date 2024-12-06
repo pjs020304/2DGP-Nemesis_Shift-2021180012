@@ -117,6 +117,7 @@ class Player:
         self.idle_action, self.charinfo[charnum].idle_action = self.charinfo[charnum].idle_action, self.idle_action
         self.hp, self.charinfo[charnum].hp = self.charinfo[charnum].hp, self.hp
         self.basic_atk, self.charinfo[charnum].basic_atk = self.charinfo[charnum].basic_atk, self.basic_atk
+        self.basic_atk.set_volume(70)
         self.skill, self.charinfo[charnum].skill = self.charinfo[charnum].skill, self.skill
         self.hit_sound[0], self.charinfo[charnum].hit_sound[0] = self.charinfo[charnum].hit_sound[0], self.hit_sound[0]
         self.hit_sound[1], self.charinfo[charnum].hit_sound[1] = self.charinfo[charnum].hit_sound[1], self.hit_sound[1]
@@ -339,7 +340,7 @@ class Player:
                     self.charinfo[1] = CharInfo(other.width, other.height, other.size_x, other.size_y, other.run_action, other.basic_atk_action, other.fall_action,other.idle_action, other.png, other.basic_atk_size_x, other.basic_atk_size_y, other.skill_atk_action, other.skill_atk_size_x, other.skill_atk_size_y, other.maxhp, other.basic_atk, other.skill,other.hit_sound)
                     game_world.remove_object(other)
                 else:
-                    temp = CharInfo(other.width, other.height, other.size_x, other.size_y, other.run_action, other.basic_atk_action, other.fall_action,other.idle_action, other.png, other.basic_atk_size_x, other.basic_atk_size_y, other.skill_atk_action, other.skill_atk_size_x, other.skill_atk_size_y, other.maxhp, other.hit_sound)
+                    temp = CharInfo(other.width, other.height, other.size_x, other.size_y, other.run_action, other.basic_atk_action, other.fall_action,other.idle_action, other.png, other.basic_atk_size_x, other.basic_atk_size_y, other.skill_atk_action, other.skill_atk_size_x, other.skill_atk_size_y, other.maxhp, other.basic_atk, other.skill,other.hit_sound)
                     game_world.remove_object(other)
                     self.size_x, temp.size_x = temp.size_x, self.size_x
                     self.size_y, temp.size_y = temp.size_y, self.size_y

@@ -325,6 +325,12 @@ class LordOfFlames(Monster):
                 game_world.add_obj(play_mode.portal2, 1)
                 game_world.add_collision_pair('player:portal2', None, play_mode.portal2)
 
+    def move_slightly_to(self, tx, ty):
+        self.dir = math.atan2(ty - self.y, tx - self.x)
+        distance = player.RUN_SPEED_PPS* 1.5 * game_framework.frame_time
+        self.x += distance * math.cos(self.dir)
+        self.y += distance * math.sin(self.dir)
+
     def move_to(self, r=1.5):
         if self.state != 'Die':
             self.move_slightly_to(self.tx, self.ty)
