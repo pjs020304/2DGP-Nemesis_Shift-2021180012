@@ -75,7 +75,7 @@ class Monster:
         return distance2 < (player.PIXEL_PER_METER * r) ** 2
     def move_slightly_to(self, tx, ty):
         self.dir = math.atan2(ty - self.y, tx - self.x)
-        distance = player.RUN_SPEED_PPS * game_framework.frame_time
+        distance = player.RUN_SPEED_PPS/2 * game_framework.frame_time
         self.x += distance * math.cos(self.dir)
         self.y += distance * math.sin(self.dir)
     def set_random_location(self):
@@ -268,8 +268,8 @@ class LordOfFlames(Monster):
         self.skill_atk_size_x, self.skill_atk_size_y = 180, 100
         self.fall_action = 1
         self.idle_action = 7
-        self.currenthp =1
-        self.maxhp = 7
+        self.currenthp =15
+        self.maxhp = 15
         self.png = 'Resource\\Lord of the Flames spritesheet 145x47 with glow.png'
         self.basic_atk = load_wav('Resource\\fire_sound.mp3')
         self.basic_atk.set_volume(90)
@@ -398,19 +398,21 @@ class LordOfFlames(Monster):
         self.x += distance * math.cos(self.dir)
         self.y += distance * math.sin(self.dir)
 
+    def set_charge(self):
+        if self.x - self.min_x > self.max_x - self.x:
+            self.tx, self.ty = self.min_x, self.y
+        else:
+            self.tx, self.ty = self.max_x, self.y
+
     def third_pattern_charge(self):
-
-        if self.x-self.min_x > self.max_x - self.x: self.tx, self.ty = self.min_x, self.y
-        else: self.tx, self.ty = self.max_x, self.y
-
         self.action = 3
         self.move_charge(self.tx, self.ty)
-        self.frame = (self.frame + player.FRAMES_PER_ACTION * player.ACTION_PER_TIME * game_framework.frame_time) %14
-        if get_time() - self.sleeping_time > 0.2:
+        self.frame = (self.frame + player.FRAMES_PER_ACTION * player.ACTION_PER_TIME * game_framework.frame_time) % 14
+        if get_time() - self.sleeping_time > 0.25:
             if math.cos(self.dir) <= 0:
-                monsteratk = attack.MonsterATKPlayer(self.x - 25, self.y, self.skill_atk_size_x,self.skill_atk_size_y)
+                monsteratk = attack.MonsterATKPlayer(self.x - 25, self.y, self.skill_atk_size_x, self.skill_atk_size_y)
             else:
-                monsteratk = attack.MonsterATKPlayer(self.x + 25, self.y, self.skill_atk_size_x,self.skill_atk_size_y)
+                monsteratk = attack.MonsterATKPlayer(self.x + 25, self.y, self.skill_atk_size_x, self.skill_atk_size_y)
             game_world.add_obj(monsteratk, 1)
             game_world.add_collision_pair('monsterATK:player', monsteratk, None)
             self.skill.play()
@@ -446,13 +448,15 @@ class LordOfFlames(Monster):
               Action('teleport and Attack', self.second_pattern_teleport_attack),
               Action('charge attack', self.third_pattern_charge)]
 
+        a10 = Action('set charge', self.set_charge)
+
         c1 = Condition('1번째 패턴인가?', self.check_1)
         c2 = Condition('2번째 패턴인가?', self.check_2)
         c3 = Condition('3번째 패턴인가?', self.check_3)
 
         first_pattern = Sequence('첫번째 패턴 실행', c1, a4[0])
         second_pattern = Sequence('두번째 패턴 실행', c2, a4[1])
-        third_pattern = Sequence('세번째 패턴 실행', c3, a4[2])
+        third_pattern = Sequence('세번째 패턴 실행', c3, a10, a4[2])
 
 
         pattern_action = Selector('3가지 패턴 중 하나 실행', first_pattern, second_pattern, third_pattern)
@@ -475,7 +479,7 @@ class LordOfPotion(Monster):
         self.skill_atk_size_x, self.skill_atk_size_y = 180, 100
         self.fall_action = 1
         self.idle_action = 7
-        self.currenthp =1
+        self.currenthp =30
         self.maxhp = 7
         self.png = 'Resource\\Lord of the Flames spritesheet 145x47 with glow.png'
         self.basic_atk = load_wav('Resource\\fire_sound.mp3')
@@ -523,16 +527,12 @@ class LordOfPotion(Monster):
             if self.currenthp <=0 and self.state != 'Die':
                 self.state = 'Die'
                 self.dir = 0
-                play_mode.portal2 = background.Portal(500, 130)
-                game_world.add_obj(play_mode.portal2, 1)
-                game_world.add_collision_pair('player:portal2', None, play_mode.portal2)
+
         if group == 'playerFarATK:monster':
             if self.currenthp <= 0 and self.state != 'Die':
                 self.state = 'Die'
                 self.dir = 0
-                play_mode.portal2 = background.Portal(500, 130)
-                game_world.add_obj(play_mode.portal2, 1)
-                game_world.add_collision_pair('player:portal2', None, play_mode.portal2)
+
 
     def move_to(self, r=1.5):
         if self.state != 'Die':
@@ -617,7 +617,7 @@ class LordOfPotion(Monster):
         self.action = 3
         self.move_charge(self.tx, self.ty)
         self.frame = (self.frame + player.FRAMES_PER_ACTION * player.ACTION_PER_TIME * game_framework.frame_time) % 14
-        if get_time() - self.sleeping_time > 0.15:
+        if get_time() - self.sleeping_time > 0.2:
             if math.cos(self.dir) <= 0:
                 monsteratk = attack.MonsterATKPlayer(self.x - 25, self.y, self.skill_atk_size_x, self.skill_atk_size_y)
             else:

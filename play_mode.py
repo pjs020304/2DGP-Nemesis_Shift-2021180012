@@ -57,8 +57,8 @@ def init():
     backgrounds = background.BackGround(1)
     game_world.add_obj(backgrounds,0)
 
-    2680
-    portal = background.Portal(500, 270)
+
+    portal = background.Portal(2680, 270)
     game_world.add_obj(portal, 1)
     game_world.add_collision_pair('player:portal', None, portal)
 

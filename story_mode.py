@@ -55,8 +55,8 @@ class TalkBox:
             self.font.draw(50, 200, 'Release the tormented souls!!!"', (255, 0, 0))
         if self.time*5<get_time() - self.current_time < self.time*6:
             play_mode.backgrounds.bgm3.repeat_play()
-            play_mode.final_lord.current_time =get_time()
-            play_mode.final_lord.current_time =get_time()
+            play_mode.final_lord[0].current_time =get_time()
+            play_mode.final_lord[0].current_time =get_time()
             game_framework.pop_mode()
     def update(self):
         pass
@@ -85,6 +85,7 @@ def handle_events():
         if event.type == SDL_QUIT:
             game_framework.quit()
         elif event.type == SDL_KEYDOWN and event.key == SDLK_ESCAPE:
+            play_mode.backgrounds.bgm3.repeat_play()
             game_framework.pop_mode()
 
 def draw():
