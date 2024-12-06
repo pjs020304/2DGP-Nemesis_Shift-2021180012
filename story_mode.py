@@ -54,6 +54,9 @@ class TalkBox:
             self.font.draw(50, 250, 'You must be a Monster!!!"', (255, 0, 0))
             self.font.draw(50, 200, 'Release the tormented souls!!!"', (255, 0, 0))
         if self.time*5<get_time() - self.current_time < self.time*6:
+            play_mode.backgrounds.bgm3.repeat_play()
+            play_mode.final_lord.current_time =get_time()
+            play_mode.final_lord.current_time =get_time()
             game_framework.pop_mode()
     def update(self):
         pass

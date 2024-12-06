@@ -156,7 +156,7 @@ def init3():
     global portal2
     global player
     global background
-    global lords
+    global final_lord
 
     player.x, player.y = 400, 90
 
@@ -164,12 +164,12 @@ def init3():
     game_world.add_obj(backgrounds, 0)
 
     blocks = [
-        bridge.Block(30, 176, 82, 22, -1100, 250, 300, 100),
-        bridge.Block(30, 176, 82, 22, -700, 250, 300, 100),
-        bridge.Block(30, 176, 82, 22, -300, 250, 300, 100),
-        bridge.Block(30, 176, 82, 22, 500, 250, 1000, 100),
-        bridge.Block(30, 176, 82, 22, 1400, 250, 300, 100),
-        bridge.Block(30, 176, 82, 22, 1800, 250, 300, 100),
+        bridge.Block(30, 176, 82, 22, -1100, 270, 300, 100),
+        bridge.Block(30, 176, 82, 22, -700, 270, 300, 100),
+        bridge.Block(30, 176, 82, 22, -300, 270, 300, 100),
+        bridge.Block(30, 176, 82, 22, 500, 270, 1000, 100),
+        bridge.Block(30, 176, 82, 22, 1400, 270, 300, 100),
+        bridge.Block(30, 176, 82, 22, 1800, 270, 300, 100),
 
         bridge.Block(30, 176, 82, 22, DK_width // 2, 100, 3000, 100)
     ]
@@ -180,10 +180,10 @@ def init3():
     for block in blocks:
         game_world.add_collision_pair('player:block', None, block)
 
-    lords = [
-        monster.LordOfFlames(0, 6, 145, 47, 8, 800, 100, 150, 100, DK_width // 2 + 1000, DK_width // 2 - 1000)
+    final_lord = [
+        monster.LordOfPotion(0, 6, 145, 47, 8, 510, 300, 250, 200, 1000, 0)
     ]
-    for lord in lords:
+    for lord in final_lord:
         game_world.add_obj(lord, 1)
         game_world.add_collision_pair('player:monster', None, lord)
         game_world.add_collision_pair('playerATK:monster', lord, None)

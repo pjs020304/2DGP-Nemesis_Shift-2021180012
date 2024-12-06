@@ -401,7 +401,7 @@ class LordOfFlames(Monster):
     def third_pattern_charge(self):
 
         if self.x-self.min_x > self.max_x - self.x: self.tx, self.ty = self.min_x, self.y
-        else: self.tx, self.ty = self.min_x, self.y
+        else: self.tx, self.ty = self.max_x, self.y
 
         self.action = 3
         self.move_charge(self.tx, self.ty)
@@ -548,7 +548,7 @@ class LordOfPotion(Monster):
             self.sleeping_time = get_time()
             self.player_x, self.player_y =  play_mode.player.x, play_mode.player.y
             self.old_x, self.old_y = self.x, self.y
-            self.select_pattern = randint(0,2)
+            self.select_pattern = randint(2,2)
             return BehaviorTree.SUCCESS
         return BehaviorTree.RUNNING
 
@@ -605,19 +605,21 @@ class LordOfPotion(Monster):
         self.x += distance * math.cos(self.dir)
         self.y += distance * math.sin(self.dir)
 
+    def set_charge(self):
+        if self.x - self.min_x > self.max_x - self.x:
+            self.tx, self.ty = self.min_x, self.y
+        else:
+            self.tx, self.ty = self.max_x, self.y
+
     def third_pattern_charge(self):
-
-        if self.x-self.min_x > self.max_x - self.x: self.tx, self.ty = self.min_x, self.y
-        else: self.tx, self.ty = self.min_x, self.y
-
         self.action = 3
         self.move_charge(self.tx, self.ty)
-        self.frame = (self.frame + player.FRAMES_PER_ACTION * player.ACTION_PER_TIME * game_framework.frame_time) %14
+        self.frame = (self.frame + player.FRAMES_PER_ACTION * player.ACTION_PER_TIME * game_framework.frame_time) % 14
         if get_time() - self.sleeping_time > 0.2:
             if math.cos(self.dir) <= 0:
-                monsteratk = attack.MonsterATKPlayer(self.x - 25, self.y, self.skill_atk_size_x,self.skill_atk_size_y)
+                monsteratk = attack.MonsterATKPlayer(self.x - 25, self.y, self.skill_atk_size_x, self.skill_atk_size_y)
             else:
-                monsteratk = attack.MonsterATKPlayer(self.x + 25, self.y, self.skill_atk_size_x,self.skill_atk_size_y)
+                monsteratk = attack.MonsterATKPlayer(self.x + 25, self.y, self.skill_atk_size_x, self.skill_atk_size_y)
             game_world.add_obj(monsteratk, 1)
             game_world.add_collision_pair('monsterATK:player', monsteratk, None)
             self.skill.play()
@@ -672,6 +674,8 @@ class LordOfPotion(Monster):
               Action('teleport and Attack', self.second_pattern_teleport_attack),
               Action('charge attack', self.third_pattern_charge)]
 
+        a10 = Action('돌진 위치 정하기', self.set_charge)
+
         c1 = Condition('1번째 패턴인가?', self.check_1)
         c2 = Condition('2번째 패턴인가?', self.check_2)
         c3 = Condition('3번째 패턴인가?', self.check_3)
@@ -680,12 +684,12 @@ class LordOfPotion(Monster):
 
         first_pattern = Sequence('첫번째 패턴 실행', c1, a4[0])
         second_pattern = Sequence('두번째 패턴 실행', c2, a4[1])
-        third_pattern = Sequence('세번째 패턴 실행', c3, a4[2])
-        four_pattern = Sequence('세번째 패턴 실행', c4, a4[3])
-        five_pattern = Sequence('세번째 패턴 실행', c5, a4[4])
+        third_pattern = Sequence('세번째 패턴 실행', c3, a10, a4[2])
+        # four_pattern = Sequence('세번째 패턴 실행', c4, a4[3])
+        # five_pattern = Sequence('세번째 패턴 실행', c5, a4[4])
 
 
-        pattern_action = Selector('3가지 패턴 중 하나 실행', first_pattern, second_pattern, third_pattern)
+        pattern_action = Selector('3가지 패턴 중 하나 실행',  first_pattern,  second_pattern, third_pattern)
 
         # move_and_attack = Selector('공격할건지 안할건지 선택', attack_player, a1)
 
